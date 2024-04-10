@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+
+class RepositoryController extends Controller
+{
+    /**
+     * Handle the incoming request.
+     */
+    public function __invoke(Request $request, string $repository, string $path)
+    {
+        // We ensure that the headers are there thanks to the middleware
+        $systemId = $request->headers->get('php-auth-user');
+        $secret = $request->headers->get('php-auth-pw');
+
+        if (Cache::has($systemId)) {
+            Log::debug('Cache hit');
+        } else {
+            Log::debug('Cache miss, sending request');
+            $response = Http::withHeader('Authorization', 'Basic '.base64_encode($systemId.':'.$secret))
+                ->get(config("repositories.endpoints.$repository").'/auth/product/nethsecurity');
+            if ($response->successful()) {
+                Log::debug('Caching the request, code received is: '.$response->status());
+                Cache::put($systemId, true, now()->addDays(2));
+            } else {
+                Log::warning('My subscription error, error code returned: '.$response->status());
+                abort(401);
+            }
+        }
+
+        if (Storage::fileMissing($path)) {
+            abort(404);
+        }
+
+        return Storage::download($path);
+    }
+}
