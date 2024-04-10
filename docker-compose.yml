@@ -9,6 +9,8 @@ services:
                 GID: ${GID:-1000}
         volumes:
             - .:/var/www/html
+        env_file:
+            - .env
     nginx:
         pull_policy: never
         build:
