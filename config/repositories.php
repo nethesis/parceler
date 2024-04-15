@@ -9,4 +9,9 @@ return [
         'enterprise' => env('ENTERPRISE_ENDPOINT', 'https://my.nethesis.it'),
         'community' => env('COMMUNITY_ENDPOINT', 'https://my.nethserver.com'),
     ],
+
+    /*
+     * This directory contains the snapshots of synced repositories.
+     */
+    'directory' => env('REPOSITORY_BASE_FOLDER', 'repositories'),
 ];
