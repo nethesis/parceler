@@ -1,5 +1,6 @@
 FROM php:8.3.4-fpm-alpine as base
 WORKDIR /var/www/html
+RUN apk add --no-cache rclone
 COPY --from=mlocati/php-extension-installer:2.2.5 /usr/bin/install-php-extensions /usr/local/sbin/
 COPY --from=composer:2.7.2 /usr/bin/composer /usr/local/bin/composer
 
