@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\RepositorySynced;
 use App\Models\Repository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -31,5 +32,7 @@ class SyncRepository implements ShouldQueue
         Process::forever()
             ->run($this->repository->command)
             ->throw();
+        Log::debug("Repository {$this->repository->name} synced.");
+        RepositorySynced::dispatch($this->repository);
     }
 }
