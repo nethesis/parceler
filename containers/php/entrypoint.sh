@@ -14,7 +14,6 @@ if [ "$1" = 'php-fpm' ]; then
         php artisan optimize
     fi
     php artisan migrate --force
-    php artisan storage:link
     chown -R www-data:www-data storage
 fi
 
