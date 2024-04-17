@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Repository;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
@@ -22,7 +23,8 @@ it('returns not found if wrong repo')
     ->assertNotFound();
 
 it('cannot access route without base auth', function ($repository) {
-    get("/repository/$repository/nethsecurity/packages/x86_64/base/Packages")
+    $repo = Repository::factory()->create();
+    get("/repository/$repository/$repo->name/packages/x86_64/base/Packages")
         ->assertUnauthorized()
         ->assertHeader('WWW-Authenticate', 'Basic');
 })->with('repositories');
@@ -45,9 +47,10 @@ it('retrieves ok from upstream', function ($repository) {
     Http::fake([
         $endpoint.'/*' => Http::response(),
     ]);
+    $repo = Repository::factory()->create();
     // Backend request
     withBasicAuth($uuid, $secret)
-        ->get("/repository/$repository/nethsecurity/packages/x86_64/base/Packages")
+        ->get("/repository/$repository/$repo->name/packages/x86_64/base/Packages")
         ->assertNotFound();
     // Http assertions
     Http::assertSent(function (Request $request) use ($endpoint, $token) {
@@ -71,9 +74,10 @@ it('retrieves error from upstream', function ($repository) {
     Http::fake([
         $endpoint.'/*' => Http::response(status: 401),
     ]);
+    $repo = Repository::factory()->create();
     // Backend request
     withBasicAuth($uuid, $secret)
-        ->get("/repository/$repository/nethsecurity/packages/x86_64/base/Packages")
+        ->get("/repository/$repository/$repo->name/packages/x86_64/base/Packages")
         ->assertUnauthorized();
     // Http assertions
     Http::assertSent(function (Request $request) use ($endpoint, $token) {
@@ -88,9 +92,13 @@ it('downloads file', function ($repository) {
     Cache::shouldReceive('has')
         ->with($uuid)
         ->andReturnTrue();
+
+    $repo = Repository::factory()->create();
+    $stablePath = $repo->getStablePath().now()->toAtomString();
+    Storage::createDirectory($stablePath);
     $file = UploadedFile::fake()->create('Packages');
-    $path = Storage::put('nethsecurity/packages/x86_64/base', $file);
+    Storage::putFileAs($stablePath.'/packages/x86_64/base', $file, 'Packages');
     withBasicAuth($uuid, '')
-        ->get("/repository/$repository/$path")
+        ->get("/repository/$repository/$repo->name/packages/x86_64/base/Packages")
         ->assertSuccessful();
 })->with('repositories');

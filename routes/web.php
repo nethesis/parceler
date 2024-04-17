@@ -8,7 +8,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/repository/{repository}/{path}', RepositoryController::class)
-    ->whereIn('repository', array_keys(config('repositories.endpoints')))
+Route::get('/repository/{type}/{repository:name}/{path}', RepositoryController::class)
+    ->whereIn('type', array_keys(config('repositories.endpoints')))
     ->where('path', '.*')
     ->middleware(ForceBasicAuth::class);
