@@ -24,4 +24,18 @@ class RepositoryFactory extends Factory
             'delay' => fake()->numberBetween(1, 7),
         ];
     }
+
+    /**
+     * Indicate that the repository is frozen.
+     *
+     * @return Factory<Repository>
+     */
+    public function freeze(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'freeze' => fake()->filePath(),
+            ];
+        });
+    }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->longText('command');
             $table->string('source_folder');
             $table->integer('delay');
-            $table->dateTimeTz('freeze')->nullable();
+            $table->string('freeze')->nullable();
             $table->timestamps();
         });
     }

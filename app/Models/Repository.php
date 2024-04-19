@@ -22,21 +22,25 @@ class Repository extends Model
     public function getStablePath(): string
     {
         $snapshotDir = config('repositories.directory').'/'.$this->name;
-        $stable = collect(Storage::directories($snapshotDir))
-            ->map(function (string $filePath): Carbon {
-                return Carbon::createFromFormat(DateTimeInterface::ATOM, basename($filePath));
-            })
-            ->filter(function (Carbon $date): bool {
-                return $date->isBetween(now(), now()->subDays($this->delay));
-            })
-            ->sort(function (Carbon $a, Carbon $b): int {
-                return $b->diffInSeconds($a);
-            })
-            ->map(function (Carbon $date): string {
-                return $date->toAtomString();
-            })
-            ->first();
+        if (is_null($this->freeze)) {
+            $stable = collect(Storage::directories($snapshotDir))
+                ->map(function (string $filePath): Carbon {
+                    return Carbon::createFromFormat(DateTimeInterface::ATOM, basename($filePath));
+                })
+                ->filter(function (Carbon $date): bool {
+                    return $date->isBetween(now(), now()->subDays($this->delay));
+                })
+                ->sort(function (Carbon $a, Carbon $b): int {
+                    return $b->diffInSeconds($a);
+                })
+                ->map(function (Carbon $date): string {
+                    return $date->toAtomString();
+                })
+                ->first();
 
-        return "$snapshotDir/$stable";
+            return "$snapshotDir/$stable";
+        } else {
+            return "$snapshotDir/$this->freeze";
+        }
     }
 }
