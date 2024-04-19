@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\RepositorySynced;
+use App\Events\SnapshotCreated;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -23,5 +24,6 @@ class ProcessRepositoryUpstream implements ShouldQueue
             Storage::copy($file, $dest);
         }
         Log::debug("Snapshot created successfully at $targetDir.");
+        SnapshotCreated::dispatch($event->repository);
     }
 }

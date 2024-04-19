@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -25,7 +24,7 @@ class Repository extends Model
         if (is_null($this->freeze)) {
             $stable = collect(Storage::directories($snapshotDir))
                 ->map(function (string $filePath): Carbon {
-                    return Carbon::createFromFormat(DateTimeInterface::ATOM, basename($filePath));
+                    return Carbon::createFromFormat(DATE_ATOM, basename($filePath));
                 })
                 ->filter(function (Carbon $date): bool {
                     return $date->isBetween(now(), now()->subDays($this->delay));
