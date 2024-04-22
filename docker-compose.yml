@@ -1,23 +1,14 @@
 services:
-    php:
-        pull_policy: never
-        build:
-            dockerfile: containers/php/Dockerfile
-            target: development
-            args:
-                UID: ${UID:-1000}
-                GID: ${GID:-1000}
-        volumes:
-            - .:/var/www/html
-    nginx:
-        pull_policy: never
-        build:
-            dockerfile: containers/nginx/Dockerfile
-            target: production
-        ports:
-            - "80:80"
-        volumes:
-            - .:/var/www/html
-        environment:
-            FPM_URL: php
-            FPM_PORT: 9000
+  app:
+    pull_policy: never
+    build:
+      dockerfile: containers/Dockerfile
+      target: development
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    ports:
+      - "8080:80"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - .:/var/www/html
