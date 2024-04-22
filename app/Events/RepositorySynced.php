@@ -16,10 +16,13 @@ class RepositorySynced
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public readonly string $timestamp;
+
     /**
      * Create a new event instance.
      */
     public function __construct(public readonly Repository $repository)
     {
+        $this->timestamp = now()->toAtomString();
     }
 }

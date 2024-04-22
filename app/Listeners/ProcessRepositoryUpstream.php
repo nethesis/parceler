@@ -21,7 +21,7 @@ class ProcessRepositoryUpstream implements ShouldQueue
     public function handle(RepositorySynced $event): void
     {
         Log::debug("Repository {$event->repository->name} has been synced correctly, snapshotting directory.");
-        $targetDir = config('repositories.directory').'/'.$event->repository->name.'/'.now()->toAtomString();
+        $targetDir = config('repositories.directory').'/'.$event->repository->name.'/'.$event->timestamp;
         Storage::makeDirectory($targetDir);
         foreach (Storage::allFiles($event->repository->source_folder) as $file) {
             // Remove first directory from path
