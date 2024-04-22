@@ -23,6 +23,7 @@ jobs:
         uses: docker/metadata-action@v5
         id: meta
         with:
+          bake-target: production
           images: |
             ghcr.io/${{ github.repository }}
           tags: |
@@ -38,10 +39,11 @@ jobs:
 
       - uses: docker/bake-action@v4
         with:
+          targets: production
           files: |
             ./docker-bake.hcl
-            ${{ steps.meta-app.outputs.bake-file }}
+            ${{ steps.meta.outputs.bake-file }}
           set: |
             *.cache-to=type=gha,mode=max
             *.cache-from=type=gha
-          push: true
+            *.output=type=registry

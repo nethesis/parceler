@@ -8,7 +8,6 @@ target "production" {
     tags       = [
         "ghcr.io/nethesis/parceler:latest"
     ]
-
 }
 
 group "default" {
