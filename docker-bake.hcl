@@ -6,7 +6,7 @@ target "production" {
         "type=docker"
     ]
     tags       = [
-        "ghcr.io/nethesis/alpha-centauri:latest"
+        "ghcr.io/nethesis/parceler:latest"
     ]
 
 }

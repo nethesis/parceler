@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'alpha-centauri'),
+    'name' => env('APP_NAME', 'parceler'),
 
     /*
     |--------------------------------------------------------------------------

@@ -92,7 +92,7 @@ To build the production images:
 docker buildx bake
 ```
 
-You will find the image tagged as `ghcr.io/nethserver/alpha-centauri:latest`.
+You will find the image tagged as `ghcr.io/nethserver/parceler:latest`.
 
 ## Run the production image
 

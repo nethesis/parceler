@@ -1,5 +1,5 @@
 {
-    "name": "nethserver/alpha-centauri",
+    "name": "nethserver/parceler",
     "type": "project",
     "description": "Repo for Nethsecurity packages.",
     "keywords": [
