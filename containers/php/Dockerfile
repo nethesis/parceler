@@ -33,7 +33,7 @@ FROM base as production
 RUN install-php-extensions opcache
 COPY composer.json .
 COPY composer.lock .
-RUN composer install --no-dev --no-scripts
+RUN composer install --no-dev --no-scripts --no-cache
 COPY app ./app
 COPY bootstrap ./bootstrap
 COPY config ./config
