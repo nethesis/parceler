@@ -19,13 +19,25 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
-      - name: Generate tags
+      - name: Generate php image tags
         uses: docker/metadata-action@v5
-        id: meta
+        id: meta-php
         with:
-          bake-target: production
+          bake-target: php
           images: |
-            ghcr.io/${{ github.repository }}
+            ghcr.io/${{ github.repository }}-php
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Generate nginx image tags
+        uses: docker/metadata-action@v5
+        id: meta-nginx
+        with:
+          bake-target: nginx
+          images: |
+            ghcr.io/${{ github.repository }}-nginx
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -42,7 +54,8 @@ jobs:
           targets: production
           files: |
             ./docker-bake.hcl
-            ${{ steps.meta.outputs.bake-file }}
+            ${{ steps.meta-php.outputs.bake-file }}
+            ${{ steps.meta-nginx.outputs.bake-file }}
           set: |
             *.cache-to=type=gha,mode=max
             *.cache-from=type=gha

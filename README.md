@@ -67,7 +67,7 @@ You can find the app running at `http://localhost:8080`.
 To run any commands inside the development environment, you need to get to the shell using:
 
 ```bash
-docker compose exec --user www-data app bash
+docker compose exec app bash
 ```
 
 ### Running tests
@@ -80,36 +80,42 @@ php artisan test
 
 ## Build
 
-The deployment of the image is being taken care of by GitHub Actions, however if you want to build the production image yourself follow the instructions below.
-
 ### Prerequisites
 
 - [Docker Bake](https://docs.docker.com/build/bake/)
 
-To build the production images:
+### Build the production image
+
+GitHub Actions takes care of the deployment of the images to the registry, however if you want to build the production image yourself follow the instructions below.
 
 ```bash
-docker buildx bake
+docker buildx bake -f docker-bake.hcl production
 ```
 
-You will find the image tagged as `ghcr.io/nethserver/parceler:latest`.
+You will find the images tagged as `ghcr.io/nethserver/parceler-*:latest`.
 
-## Run the production image
+## Run the production environment
 
-To run the production image, you can just run the image with some expedients:
+The production environment is composed by the following services:
 
-- Server runs on port `80`
-- Following environment variables are required:
-  - `APP_KEY`: The application key, you can generate one using the development environment using `php artisan key:generate --show`.
-  - `APP_TIMEZONE`: The timezone to use for the app, defaults to `UTC`.
-  - `APP_URL`: The full URL where the application is reached from.
-  - `LOG_CHANNEL`: Set this to `errorlog` to avoid writing logs to the filesystem.
-  - `LOG_LEVEL`: This can be safely set to `warning`, you can increase the log level if needed.
-  - `DB_DATABASE`: This is the name of the database file to use (sqlite), must be an absolute path and wrote inside a volume.
-  - `FILESYSTEM_DISK`: Disk to use during production, works same as development.
-  - `AWS_ACCESS_KEY_ID`: AWS Access Key ID.
-  - `AWS_SECRET_ACCESS_KEY`: AWS Secret Access Key.
-  - `AWS_DEFAULT_REGION`: AWS Default Region.
-  - `AWS_BUCKET`: AWS Bucket Name.
-  - `AWS_ENDPOINT`: AWS Endpoint.
-- **optional** to sync all software with the same timezone, the additional `/etc/localtime:/etc/localtime:ro` volume mount can be done to ensure time is respected.
+- `nginx`: nginx server to serve the application.
+- `php`: PHP-FPM to run the application.
+- `scheduler`: Laravel scheduler to run the scheduled tasks.
+- `worker`: Laravel worker to run the queued jobs.
+
+You can see by the docker-compose.production.yml file what the services need to run in a production environment.
+
+The env_file in the php image need to have the following environment variables:
+
+- `APP_KEY`: The application key, you can generate one using the development environment using `php artisan key:generate --show`.
+- `APP_TIMEZONE`: The timezone to use for the app, defaults to `UTC`.
+- `APP_URL`: The full URL where the application is reached from.
+- `LOG_CHANNEL`: Set this to `errorlog` to avoid writing logs to the filesystem.
+- `LOG_LEVEL`: This can be safely set to `warning`, you can increase the log level if needed.
+- `DB_DATABASE`: This is the name of the database file to use (sqlite), must be an absolute path and wrote inside a volume.
+- `FILESYSTEM_DISK`: Disk to use during production, works same as development.
+- `AWS_ACCESS_KEY_ID`: AWS Access Key ID.
+- `AWS_SECRET_ACCESS_KEY`: AWS Secret Access Key.
+- `AWS_DEFAULT_REGION`: AWS Default Region.
+- `AWS_BUCKET`: AWS Bucket Name.
+- `AWS_ENDPOINT`: AWS Endpoint.
