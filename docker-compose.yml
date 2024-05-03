@@ -23,7 +23,7 @@ services:
     extends:
       service: php
     stop_signal: SIGKILL
-    command: php artisan queue:listen --tries=3
+    command: php artisan queue:listen --tries=3 --timeout=1800
     environment:
       PHP_HOST: php
       PHP_PORT: 9000
