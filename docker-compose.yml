@@ -31,7 +31,6 @@ services:
     extends:
       service: php
     stop_signal: SIGKILL
-    user: root
     command: crond -f
     environment:
       PHP_HOST: php
