@@ -6,3 +6,5 @@ Volume=/etc/localtime:/etc/localtime:ro
 Volume=storage.volume:/var/www/html
 Exec=worker
 EnvironmentFile=%S/parceler.env
+Environment=PHP_HOST=parceler-php
+Environment=PHP_PORT=9000
