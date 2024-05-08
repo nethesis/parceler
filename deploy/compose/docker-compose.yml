@@ -1,3 +1,4 @@
+name: parceler-prod
 services:
   nginx:
     image: ghcr.io/nethesis/parceler-nginx:latest
@@ -14,25 +15,20 @@ services:
       - storage:/var/www/html
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      - .env.production
+      - .env
   worker:
-    image: ghcr.io/nethesis/parceler-php:latest
+    extends:
+      service: php
     stop_signal: SIGKILL
-    user: www-data
-    command: php artisan queue:work --tries=3 --timeout=1800
-    volumes:
-      - storage:/var/www/html
-      - /etc/localtime:/etc/localtime:ro
+    command: worker
     environment:
       PHP_HOST: php
       PHP_PORT: 9000
   scheduler:
-    image: ghcr.io/nethesis/parceler-php:latest
+    extends:
+      service: php
     stop_signal: SIGKILL
-    command: crond -f
-    volumes:
-      - storage:/var/www/html
-      - /etc/localtime:/etc/localtime:ro
+    command: scheduler
     environment:
       PHP_HOST: php
       PHP_PORT: 9000

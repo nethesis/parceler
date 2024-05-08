@@ -11,7 +11,6 @@ ADD --chmod=777 \
     --checksum=sha256:206a8f9b2177703fc5aa924d85ad6c72e82413e2d09635b4c9c82a1b65b5b3d5 \
     https://github.com/eficode/wait-for/releases/download/v2.2.4/wait-for /usr/local/bin/wait-for
 # configure entrypoints and image
-COPY --chmod=777 containers/php/entrypoint.sh /usr/local/sbin/entrypoint
 RUN echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1" > /etc/crontabs/www-data \
     && echo "access.log = /dev/null" >> /usr/local/etc/php-fpm.d/zz-docker.conf
 ENTRYPOINT ["entrypoint"]
@@ -26,6 +25,7 @@ RUN apk add --no-cache \
     && install-php-extensions xdebug \
     && mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
     && echo "ALL ALL=(ALL:ALL) NOPASSWD: ALL" > "/etc/sudoers.d/password_less_sudo"
+COPY --chmod=777 containers/php/entrypoint-dev.sh /usr/local/sbin/entrypoint
 ARG UID
 ARG GID
 RUN usermod -u "$UID" www-data \
@@ -37,6 +37,7 @@ USER www-data
 FROM base as production
 RUN install-php-extensions opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY --chmod=777 containers/php/entrypoint.sh /usr/local/sbin/entrypoint
 COPY containers/php/config/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 ARG COMPOSER_ALLOW_SUPERUSER=1
 COPY composer.json .

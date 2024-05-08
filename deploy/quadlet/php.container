@@ -1,0 +1,7 @@
+[Container]
+Pod=parceler.pod
+Image=ghcr.io/nethesis/parceler-php:latest
+ContainerName=parceler-php
+Volume=/etc/localtime:/etc/localtime:ro
+Volume=storage.volume:/var/www/html
+EnvironmentFile=%S/parceler.env
