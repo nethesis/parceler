@@ -19,7 +19,7 @@ ExecStart=/usr/bin/podman run \
 	--rm \
 	--pod-id-file %t/pod-parceler.pod-id \
 	--sdnotify=conmon \
-	--volume storage:/var/www/html \
+	--volume storage:/var/www/html/storage \
 	--volume /etc/localtime:/etc/localtime:ro \
 	--volume %S/rclone.conf:/var/www/html/rclone.conf:ro \
 	--env-file %S/parceler.env \

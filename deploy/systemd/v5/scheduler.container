@@ -3,7 +3,7 @@ Pod=parceler.pod
 Image=ghcr.io/nethesis/parceler-php:latest
 ContainerName=parceler-scheduler
 Volume=/etc/localtime:/etc/localtime:ro
-Volume=storage.volume:/var/www/html
+Volume=storage.volume:/var/www/html/storage
 Exec=scheduler
 EnvironmentFile=%S/parceler.env
 Environment=PHP_HOST=parceler-php
