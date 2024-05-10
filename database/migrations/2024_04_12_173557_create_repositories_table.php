@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->longText('command');
-            $table->string('source_folder');
+            $table->string('sub_dir')->nullable();
             $table->integer('delay');
             $table->string('freeze')->nullable();
             $table->timestamps();

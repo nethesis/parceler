@@ -19,13 +19,33 @@ class Repository extends Model
     protected $fillable = [
         'name',
         'command',
-        'source_folder',
+        'sub_dir',
         'delay',
     ];
 
+    /**
+     * Generates the snapshot directory path from the name of the repository and the configuration.
+     */
+    public function snapshotDir(): string
+    {
+        return config('repositories.snapshots').'/'.$this->name;
+    }
+
+    /**
+     * Generates the source directory path from the name of the repository and the configuration.
+     */
+    public function sourceDir(): string
+    {
+        if (is_null($this->sub_dir)) {
+            return config('repositories.source_folder').'/'.$this->name;
+        }
+
+        return config('repositories.source_folder').'/'.$this->name.'/'.$this->sub_dir;
+    }
+
     public function getStablePath(): string
     {
-        $snapshotDir = config('repositories.directory').'/'.$this->name;
+        $snapshotDir = $this->snapshotDir();
         if (is_null($this->freeze)) {
             $stable = collect(Storage::directories($snapshotDir))
                 ->map(function (string $filePath): Carbon {

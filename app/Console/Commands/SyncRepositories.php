@@ -10,6 +10,7 @@ namespace App\Console\Commands;
 use App\Jobs\SyncRepository;
 use App\Models\Repository;
 use Illuminate\Console\Command;
+use function Laravel\Prompts\multiselect;
 
 class SyncRepositories extends Command
 {
@@ -18,7 +19,7 @@ class SyncRepositories extends Command
      *
      * @var string
      */
-    protected $signature = 'app:sync-repositories {--Q|queued : Whether the job should be queued or ran immediately}';
+    protected $signature = 'repository:sync';
 
     /**
      * The console command description.
@@ -32,19 +33,13 @@ class SyncRepositories extends Command
      */
     public function handle(): void
     {
-        if ($this->option('queued')) {
-            $this->info('Triggering syncing jobs.');
-        } else {
-            $this->info('Syncing repositories.');
-        }
-        foreach (Repository::cursor() as $repo) {
-            if ($this->option('queued')) {
-                $this->info("Queueing sync for $repo->name.");
-                SyncRepository::dispatch($repo);
-            } else {
-                $this->info("Syncing $repo->name repository.");
-                SyncRepository::dispatchSync($repo);
-            }
+        $repositories = multiselect(
+            label: 'Select the repositories to sync',
+            options: Repository::pluck('name', 'id'),
+            required: true
+        );
+        foreach ($repositories as $repository) {
+            SyncRepository::dispatch(Repository::find($repository));
         }
     }
 }

@@ -12,7 +12,6 @@ use App\Models\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
-use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\textarea;
@@ -24,7 +23,7 @@ class CreateRepository extends Command implements PromptsForMissingInput
      *
      * @var string
      */
-    protected $signature = 'app:create-repository';
+    protected $signature = 'repository:create';
 
     /**
      * The console command description.
@@ -45,13 +44,15 @@ class CreateRepository extends Command implements PromptsForMissingInput
         $command = textarea(
             label: 'Provide the command to be ran to sync this repository.',
             required: true,
-            hint: "Save the content to `./storage/app/$name`."
+            hint: "Save the content to `source/$name` of the root path of the targeted storage."
         );
         $source_folder = text(
             label: 'Provide the folder where the data is.',
-            default: $name,
-            hint: 'This path is intended to be inside `./storage/app`.'
+            hint: "This path is intended to be inside `source/$name`, leave blank if no subdirectory is needed."
         );
+        if ($source_folder == '') {
+            $source_folder = null;
+        }
         $delay = text(
             label: 'Please provide how much time the repository must be kept back from upstream.',
             default: 7,
@@ -60,18 +61,10 @@ class CreateRepository extends Command implements PromptsForMissingInput
         $repository = Repository::create([
             'name' => $name,
             'command' => $command,
-            'source_folder' => $source_folder,
+            'sub_dir' => $source_folder,
             'delay' => $delay,
         ]);
-        info('Repository created successfully!');
-        $dispatchNow = confirm(
-            label: 'Do you want to sync now?',
-            default: true,
-            hint: 'Otherwise sync will be scheduled to be ran in a second time.'
-        );
-        if ($dispatchNow) {
-            SyncRepository::dispatch($repository);
-            info("Sync of $repository->name queued.");
-        }
+        info('Repository created, sync will be started.');
+        SyncRepository::dispatch($repository);
     }
 }

@@ -20,8 +20,7 @@ class CleanRepository implements ShouldQueue
      */
     public function handle(SnapshotCreated $event): void
     {
-        $snapshotPath = config('repositories.directory').'/'.$event->repository->name;
-        foreach (Storage::directories($snapshotPath) as $directory) {
+        foreach (Storage::directories($event->repository->snapshotDir()) as $directory) {
             if (basename($directory) == $event->repository->freeze) {
                 continue;
             }

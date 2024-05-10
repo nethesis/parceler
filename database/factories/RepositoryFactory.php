@@ -20,7 +20,6 @@ class RepositoryFactory extends Factory
         return [
             'name' => fake()->unique()->word(),
             'command' => fake()->sentence(),
-            'source_folder' => fake()->filePath(),
             'delay' => fake()->numberBetween(1, 7),
         ];
     }

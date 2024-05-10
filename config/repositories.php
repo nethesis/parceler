@@ -11,7 +11,13 @@ return [
     ],
 
     /*
+     * This directory will contain to the repositories that are synced.
+     * Subdirectories are expected to be named after the repository.
+     */
+    'source_folder' => env('REPOSITORY_SOURCE_FOLDER', 'source'),
+
+    /*
      * This directory contains the snapshots of synced repositories.
      */
-    'directory' => env('REPOSITORY_BASE_FOLDER', 'repositories'),
+    'snapshots' => env('REPOSITORY_BASE_FOLDER', 'snapshots'),
 ];
