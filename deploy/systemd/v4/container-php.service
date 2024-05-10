@@ -21,7 +21,7 @@ ExecStart=/usr/bin/podman run \
 	--sdnotify=conmon \
 	--volume storage:/var/www/html/storage \
 	--volume /etc/localtime:/etc/localtime:ro \
-	--volume %S/rclone.conf:/var/www/html/rclone.conf:ro \
+	--volume %S/rclone.conf:/var/www/html/rclone.conf:Z \
 	--env-file %S/parceler.env \
 	--name php \
 	--detach \
