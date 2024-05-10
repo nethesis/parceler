@@ -8,7 +8,7 @@ it('returns frozen directory', function () {
     $repository = Repository::factory()->create([
         'delay' => 7,
     ]);
-    $snapshotPath = config('repositories.directory').'/'.$repository->name;
+    $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
     Storage::createDirectory($snapshotPath.'/'.now()->subDays(6)->toAtomString());
     expect($repository->getStablePath())
         ->toBe($snapshotPath.'/'.now()->subDays(6)->toAtomString());

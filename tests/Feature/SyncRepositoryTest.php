@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\artisan;
 use function Pest\Laravel\freezeTime;
 
-dataset('command', ['app:sync-repositories', 'app:sync-repositories -Q', 'app:sync-repositories --queued']);
+dataset('command', ['repository:sync']);
 
 test('runs command correctly', function () {
     Process::fake();
@@ -33,24 +33,26 @@ test('runs command correctly', function () {
 test('can sync repository from command line', function ($command) {
     $repositories = Repository::factory()->count(3)->create();
     Queue::fake();
-    artisan($command)
+    artisan("$command {$repositories->pluck('name')->join(' ')}")
         ->assertSuccessful();
     Queue::assertCount($repositories->count());
     Queue::assertPushed(SyncRepository::class, $repositories->count());
 })->with('command');
 
 test('repository upstream processing', function () {
-    $repository = Repository::factory()->create(['source_folder' => 'example']);
+    $repository = Repository::factory()->create(['sub_dir' => 'example']);
     $listener = new ProcessRepositoryUpstream();
+    $sourcePath = config('repositories.source_folder').'/'.$repository->name;
+    $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
     Event::fake();
     Storage::fake();
-    UploadedFile::fake()->create('example/file1.txt')->storeAs('example', 'file1.txt');
-    UploadedFile::fake()->create('example/file2.txt')->storeAs('example', 'file2.txt');
-    UploadedFile::fake()->create('example/file3.txt')->storeAs('example', 'file3.txt');
+    UploadedFile::fake()->create('example/file1.txt')->storeAs("$sourcePath/example", 'file1.txt');
+    UploadedFile::fake()->create('example/file2.txt')->storeAs("$sourcePath/example", 'file2.txt');
+    UploadedFile::fake()->create('example/file3.txt')->storeAs("$sourcePath/example", 'file3.txt');
     $listener->handle(new RepositorySynced($repository));
-    Storage::assertExists('repositories/'.$repository->name.'/'.now()->toAtomString().'/file1.txt');
-    Storage::assertExists('repositories/'.$repository->name.'/'.now()->toAtomString().'/file2.txt');
-    Storage::assertExists('repositories/'.$repository->name.'/'.now()->toAtomString().'/file3.txt');
+    Storage::assertExists("$snapshotPath/".now()->toAtomString().'/file1.txt');
+    Storage::assertExists("$snapshotPath/".now()->toAtomString().'/file2.txt');
+    Storage::assertExists("$snapshotPath/".now()->toAtomString().'/file3.txt');
     Event::assertDispatched(function (SnapshotCreated $event) use ($repository): bool {
         return $event->repository->is($repository);
     });
@@ -62,7 +64,7 @@ test('cleanup old directories', function () {
             'delay' => 2,
         ]);
         Storage::fake();
-        $snapshotPath = config('repositories.directory').'/'.$repository->name;
+        $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
         Storage::createDirectory($snapshotPath.'/'.now()->subDays(3)->toAtomString());
         Storage::createDirectory($snapshotPath.'/'.now()->subDays(2)->toAtomString());
         Storage::createDirectory($snapshotPath.'/'.now()->subDay()->toAtomString());
@@ -81,7 +83,7 @@ test('cleanup old directories with frozen dir', function () {
             'freeze' => 'frozen_dir',
         ]);
         Storage::fake();
-        $snapshotPath = config('repositories.directory').'/'.$repository->name;
+        $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
         Storage::createDirectory($snapshotPath.'/'.now()->subDays(3)->toAtomString());
         Storage::createDirectory($snapshotPath.'/'.now()->subDays(2)->toAtomString());
         Storage::createDirectory($snapshotPath.'/'.now()->subDay()->toAtomString());

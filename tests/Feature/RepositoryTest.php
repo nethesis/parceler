@@ -15,7 +15,7 @@ dataset('repositories', function () {
 });
 
 beforeEach(function () {
-    Storage::fake('local');
+    Storage::fake();
 });
 
 it('returns not found if wrong repo')

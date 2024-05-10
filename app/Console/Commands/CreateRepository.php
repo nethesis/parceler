@@ -10,13 +10,12 @@ namespace App\Console\Commands;
 use App\Jobs\SyncRepository;
 use App\Models\Repository;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Console\PromptsForMissingInput;
 
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\textarea;
 
-class CreateRepository extends Command implements PromptsForMissingInput
+class CreateRepository extends Command
 {
     /**
      * The name and signature of the console command.
