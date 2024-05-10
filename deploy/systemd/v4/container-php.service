@@ -1,0 +1,40 @@
+# container-php.service
+
+[Unit]
+Description=Podman container-php.service
+Documentation=man:podman-generate-systemd(1)
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+BindsTo=pod-parceler.service
+After=pod-parceler.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=always
+TimeoutStopSec=70
+ExecStart=/usr/bin/podman run \
+	--cidfile=%t/%n.ctr-id \
+	--cgroups=no-conmon \
+	--rm \
+	--pod-id-file %t/pod-parceler.pod-id \
+	--sdnotify=conmon \
+	--volume storage:/var/www/html \
+	--volume /etc/localtime:/etc/localtime:ro \
+	--volume %S/rclone.conf:/var/www/html/rclone.conf:ro \
+	--env-file %S/parceler.env \
+	--name php \
+	--detach \
+	--replace ghcr.io/nethesis/parceler-php:main
+ExecStop=/usr/bin/podman stop \
+	--ignore -t 10 \
+	--cidfile=%t/%n.ctr-id
+ExecStopPost=/usr/bin/podman rm \
+	-f \
+	--ignore -t 10 \
+	--cidfile=%t/%n.ctr-id
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=default.target
