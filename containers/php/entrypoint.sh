@@ -11,6 +11,8 @@ php artisan optimize
 if [ "$1" = "php-fpm" ]; then
     # migrate database
     php artisan migrate --force
+    # TODO when moving to a DB, remove the following line
+    chown -R www-data:www-data storage
 elif [ "$1" = "scheduler" ]; then
     # remove scheduler command, replace the $@
     wait-for "${PHP_HOST:?Missing PHP_HOST}:${PHP_PORT:?Missing PHP_PORT}" -t 60
