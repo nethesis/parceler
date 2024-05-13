@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/nethesis/parceler/compare/v0.1.1...v0.1.2) (2024-05-13)
+
+
+### Bug Fixes
+
+* **scheduler:** misspell costed me another release ([1615a87](https://github.com/nethesis/parceler/commit/1615a87aefce35d17cdb8442aa62cdcb9a08f126))
+
 ## [0.1.1](https://github.com/nethesis/parceler/compare/v0.1.0...v0.1.1) (2024-05-13)
 
 
