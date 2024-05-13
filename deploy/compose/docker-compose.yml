@@ -14,6 +14,9 @@ services:
     volumes:
       - storage:/var/www/html/storage
       - /etc/localtime:/etc/localtime:ro
+    configs:
+      - source: rclone
+        target: /var/www/html/rclone.conf
     env_file:
       - .env
   worker:
@@ -38,4 +41,4 @@ volumes:
 
 configs:
   rclone:
-    file: ./rclone.conf
+    file: rclone.conf
