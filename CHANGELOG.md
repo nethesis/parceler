@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/nethesis/parceler/compare/v0.1.0...v0.1.1) (2024-05-13)
+
+
+### Bug Fixes
+
+* **scheduler:** fixing sync-repo scheduled job ([c7fae49](https://github.com/nethesis/parceler/commit/c7fae49b18c4ac9e2cce4ab468f025ba85b2b009))
+
 ## 0.1.0 (2024-05-13)
 
 
