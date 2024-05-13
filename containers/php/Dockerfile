@@ -57,3 +57,4 @@ RUN composer dump-autoload --optimize \
     && echo $(find . -name "*.php" | wc -l | awk '{print (int($1/1000)+2)*1000}') >> "$PHP_INI_DIR/conf.d/opcache.ini" \
     && rm /usr/local/bin/composer \
     && rm /usr/local/sbin/install-php-extensions
+VOLUME ["/var/www/html/storage"]
