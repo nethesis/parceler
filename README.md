@@ -206,3 +206,23 @@ Repository syncs are dispatched by the scheduler daily. If you want to manually 
 ```bash
 php artisan repository:sync cool_repository
 ```
+
+### Freezing repositories
+
+To freeze a repository, you can use the `php artisan repository:freeze {repository_name}` command.
+
+```bash
+php artisan repository:freeze cool_repository
+```
+
+Parcel will prompt for the repository name if not provided.
+
+### Unfreezing repositories
+
+To unfreeze a repository, you can use the `php artisan repository:unfreeze {repository_name}` command.
+
+```bash
+php artisan repository:unfreeze cool_repository
+```
+
+Parcel will prompt for the repository name if not provided.
