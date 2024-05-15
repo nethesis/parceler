@@ -14,10 +14,6 @@ dataset('repositories', function () {
     return ['enterprise', 'community'];
 });
 
-beforeEach(function () {
-    Storage::fake();
-});
-
 it('returns not found if wrong repo')
     ->get('repository/hello_world/nethsecurity/packages/x86_64/base/Packages')
     ->assertNotFound();
@@ -87,6 +83,7 @@ it('retrieves error from upstream', function ($repository) {
 })->with('repositories');
 
 it('downloads file', function ($repository) {
+    Storage::fake();
     // this tests the cache process
     $uuid = fake()->uuid();
     Cache::shouldReceive('has')
@@ -94,11 +91,11 @@ it('downloads file', function ($repository) {
         ->andReturnTrue();
 
     $repo = Repository::factory()->create();
-    $stablePath = $repo->getStablePath().now()->toAtomString();
+    $stablePath = $repo->snapshotDir().'/'.now()->toAtomString();
     Storage::createDirectory($stablePath);
     $file = UploadedFile::fake()->create('Packages');
     Storage::putFileAs($stablePath.'/packages/x86_64/base', $file, 'Packages');
     withBasicAuth($uuid, '')
         ->get("/repository/$repository/$repo->name/packages/x86_64/base/Packages")
-        ->assertSuccessful();
+        ->assertRedirect();
 })->with('repositories');

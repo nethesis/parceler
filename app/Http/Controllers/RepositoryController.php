@@ -46,6 +46,12 @@ class RepositoryController extends Controller
             abort(404);
         }
 
-        return Storage::download($fileToDownload);
+        // When using the local driver, we can just return the file
+        if (! Storage::providesTemporaryUrls()) {
+            return Storage::download($fileToDownload);
+        }
+
+        // This offloads the download directly to the client
+        return redirect(Storage::temporaryUrl($fileToDownload, now()->addMinute()));
     }
 }
