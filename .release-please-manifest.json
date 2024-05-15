@@ -1,5 +1,6 @@
 {
     "extra-files": [
         "deploy/compose/docker-compose.yml"
-    ]
+    ],
+    ".": "0.2.0"
 }
