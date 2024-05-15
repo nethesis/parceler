@@ -48,15 +48,23 @@ class Repository extends Model
         $snapshotDir = $this->snapshotDir();
         if (is_null($this->freeze)) {
             $stable = collect(Storage::directories($snapshotDir))
+                // filter out unparsable directories
+                ->filter(function (string $filePath): bool {
+                    return Carbon::hasFormat(basename($filePath), DATE_ATOM);
+                })
+                // create carbon instances from the directory names
                 ->map(function (string $filePath): Carbon {
                     return Carbon::createFromFormat(DATE_ATOM, basename($filePath));
                 })
+                // filter out directories older than the delay
                 ->filter(function (Carbon $date): bool {
                     return $date->isBetween(now(), now()->subDays($this->delay));
                 })
+                // sort the directories by date
                 ->sort(function (Carbon $a, Carbon $b): int {
                     return $b->diffInSeconds($a);
                 })
+                // get the first directory
                 ->map(function (Carbon $date): string {
                     return $date->toAtomString();
                 })
