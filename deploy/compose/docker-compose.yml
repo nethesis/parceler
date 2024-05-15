@@ -1,7 +1,7 @@
 name: parceler-prod
 services:
   nginx:
-    image: ghcr.io/nethesis/parceler-nginx:main
+    image: ghcr.io/nethesis/parceler-nginx:latest
     ports:
       - "8080:80"
     volumes:
@@ -10,7 +10,7 @@ services:
       FPM_HOST: php
       FPM_PORT: 9000
   php:
-    image: ghcr.io/nethesis/parceler-php:main
+    image: ghcr.io/nethesis/parceler-php:latest
     volumes:
       - storage:/var/www/html/storage
       - /etc/localtime:/etc/localtime:ro
