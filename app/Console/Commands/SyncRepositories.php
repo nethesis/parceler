@@ -12,6 +12,7 @@ use App\Models\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 use function Laravel\Prompts\multiselect;
 
 class SyncRepositories extends Command implements PromptsForMissingInput

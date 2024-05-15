@@ -35,10 +35,12 @@ class FreezeRepository extends Command implements PromptsForMissingInput
             $repository = Repository::where('name', $repoName)->firstOrFail();
         } catch (ModelNotFoundException) {
             $this->error("Repository '$repoName' not found.");
+
             return self::FAILURE;
         }
         if ($repository->freeze != null) {
             $this->error("Repository '$repository->name' is already frozen.");
+
             return self::FAILURE;
         }
         if (is_null($this->argument('directory'))) {
@@ -49,6 +51,7 @@ class FreezeRepository extends Command implements PromptsForMissingInput
         $this->info("Freezing repository '$repository->name' to '$directory'...");
         $repository->freeze = $directory;
         $repository->save();
+
         return self::SUCCESS;
     }
 

@@ -91,7 +91,6 @@ it('cannot unfreeze not frozen repository', function () {
         ->assertFailed();
 });
 
-
 it('can unfreeze repository with interactive choice', function () {
     $repository = Repository::factory()->freeze()->create();
     artisan('repository:unfreeze')
