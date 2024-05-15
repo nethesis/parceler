@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/nethesis/parceler/compare/v0.1.2...v0.2.0) (2024-05-15)
+
+
+### Features
+
+* adding freeze and unfreeze commands ([8dcd245](https://github.com/nethesis/parceler/commit/8dcd24554cbf7e3729f166c39e760989a5ebbf7c))
+
+
+### Bug Fixes
+
+* fixed issue where custom directories are parsed to time ([c9c259c](https://github.com/nethesis/parceler/commit/c9c259c33904fa464a04345a7cff4d91f2a44447))
+
 ## [0.1.2](https://github.com/nethesis/parceler/compare/v0.1.1...v0.1.2) (2024-05-13)
 
 
