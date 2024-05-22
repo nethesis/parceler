@@ -6,8 +6,8 @@ return [
      * Beware that the keys given here are used by the route that authenticates the machines.
      */
     'endpoints' => [
-        'enterprise' => env('ENTERPRISE_ENDPOINT', 'https://my.nethesis.it'),
-        'community' => env('COMMUNITY_ENDPOINT', 'https://my.nethserver.com'),
+        'enterprise' => env('ENTERPRISE_ENDPOINT', 'https://my.nethesis.it/auth/product/nethsecurity'),
+        'community' => env('COMMUNITY_ENDPOINT', 'https://my.nethserver.com/api/machine/info'),
     ],
 
     /*
