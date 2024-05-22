@@ -11,6 +11,7 @@ use App\Jobs\SyncRepository;
 use App\Models\Repository;
 use Illuminate\Console\Command;
 
+use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\textarea;
@@ -63,7 +64,15 @@ class CreateRepository extends Command
             'sub_dir' => $source_folder,
             'delay' => $delay,
         ]);
-        info('Repository created, sync will be started.');
-        SyncRepository::dispatch($repository);
+        $syncNow = confirm(
+            label: 'Do you want to sync the repository now?',
+            default: true
+        );
+        if ($syncNow) {
+            info('Sync will be started now by worker.');
+            SyncRepository::dispatch($repository);
+        } else {
+            info('Sync will be started when all repositories are synced.');
+        }
     }
 }

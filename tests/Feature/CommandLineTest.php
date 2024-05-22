@@ -26,6 +26,7 @@ it('can create a repository through cli', function () {
         ->expectsQuestion('Provide the command to be ran to sync this repository.', $repository->command)
         ->expectsQuestion('Provide the folder where the data is.', $repository->source_folder)
         ->expectsQuestion('Please provide how much time the repository must be kept back from upstream.', $repository->delay)
+        ->expectsConfirmation('Do you want to sync the repository now?', 'yes')
         ->assertExitCode(0);
     assertDatabaseHas('repositories', $repository->toArray());
     Queue::assertPushed(SyncRepository::class);
