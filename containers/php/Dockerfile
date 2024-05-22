@@ -30,7 +30,7 @@ ARG UID
 ARG GID
 RUN usermod -u "$UID" www-data \
     && groupmod -g "$GID" www-data
-ENV XDEBUG_MODE=develop,debug,coverage
+ENV XDEBUG_MODE=develop,debug,coverage,profile
 ENV XDEBUG_CONFIG="client_host=host.docker.internal"
 USER www-data
 
