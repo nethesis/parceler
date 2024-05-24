@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.2.0](https://github.com/nethesis/parceler/compare/v0.1.2...v0.2.0) (2024-05-24)
+
+
+### Features
+
+* added confirmation before dispatcing sync on deploy ([4d1a2d9](https://github.com/nethesis/parceler/commit/4d1a2d98c18120627396bcf44aeff0e37bb9de87))
+* adding freeze and unfreeze commands ([8dcd245](https://github.com/nethesis/parceler/commit/8dcd24554cbf7e3729f166c39e760989a5ebbf7c))
+
+
+### Bug Fixes
+
+* fixed issue where custom directories are parsed to time ([c9c259c](https://github.com/nethesis/parceler/commit/c9c259c33904fa464a04345a7cff4d91f2a44447))
+* updated endpoints ([6a0304e](https://github.com/nethesis/parceler/commit/6a0304e3a7a0c8d7e22c580c20083ac95faaa653))
+
+
+### Performance Improvements
+
+* offloading file download when using S3 services ([603aa24](https://github.com/nethesis/parceler/commit/603aa2457cdd67d9515aee6c48e1b30ebd3b5b9c))
+
+
+### Miscellaneous Chores
+
+* defining phpunit most used variables ([587f9ec](https://github.com/nethesis/parceler/commit/587f9ecca25a4b04699056d198383f8826562ed2))
+* releases cleanup ([e410d4a](https://github.com/nethesis/parceler/commit/e410d4a08f12feb585404331323daceb02d52b70))
+
 ## [0.1.2](https://github.com/nethesis/parceler/compare/v0.1.1...v0.1.2) (2024-05-13)
 
 
