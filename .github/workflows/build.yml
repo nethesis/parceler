@@ -50,7 +50,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      - uses: docker/bake-action@v4
+      - uses: docker/bake-action@v5
         with:
           targets: production
           files: |
