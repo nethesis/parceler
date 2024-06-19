@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.1](https://github.com/nethesis/parceler/compare/v0.2.0...v0.2.1) (2024-06-19)
+
+
+### Bug Fixes
+
+* using generic endpoint for key verification ([05894ad](https://github.com/nethesis/parceler/commit/05894ad46a9f12d011c1856a7ce2d66480255dd2))
+
+
+### Miscellaneous Chores
+
+* **deps:** update docker/bake-action to v5 ([bd24159](https://github.com/nethesis/parceler/commit/bd241599b024418e95a9480633c2f892c441419d))
+
 ## [0.2.0](https://github.com/nethesis/parceler/compare/v0.1.2...v0.2.0) (2024-05-24)
 
 
