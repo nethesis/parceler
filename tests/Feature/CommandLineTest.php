@@ -3,7 +3,6 @@
 use App\Jobs\SyncRepository;
 use App\Models\Repository;
 use Illuminate\Support\Facades\Queue;
-
 use function Pest\Laravel\artisan;
 use function Pest\Laravel\assertDatabaseHas;
 
@@ -30,4 +29,16 @@ it('can create a repository through cli', function () {
         ->assertExitCode(0);
     assertDatabaseHas('repositories', $repository->toArray());
     Queue::assertPushed(SyncRepository::class);
+});
+
+it('can list repositories', function () {
+    $repositories = Repository::factory()->create([
+        'name' => 'test',
+        'delay' => 1,
+    ]);
+    artisan('repository:list')
+        ->expectsTable(
+            ['Name', 'Delay (in days)', 'Repo Frozen', 'Serving Directory'],
+            [['test', 1, 'No', 'snapshots/test/']],
+        );
 });
