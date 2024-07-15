@@ -58,6 +58,8 @@ jobs:
             ${{ steps.meta-php.outputs.bake-file }}
             ${{ steps.meta-nginx.outputs.bake-file }}
           set: |
-            *.cache-to=type=gha,mode=max
-            *.cache-from=type=gha
+            php.cache-to=type=gha,mode=max,scope=php
+            php.cache-from=type=gha,scope=php
+            nginx.cache-to=type=gha,mode=max,scope=nginx
+            nginx.cache-from=type=gha,scope=nginx
             *.output=type=registry
