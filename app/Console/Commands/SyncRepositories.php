@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use function Laravel\Prompts\multiselect;
 
-class SyncRepositories extends Command implements PromptsForMissingInput
+class SyncRepositories extends Command
 {
     /**
      * The name and signature of the console command.
@@ -46,21 +46,5 @@ class SyncRepositories extends Command implements PromptsForMissingInput
                 $this->warn("Repository '$repoName' not found.");
             }
         }
-    }
-
-    /**
-     * Prompt for missing input arguments using the returned questions.
-     *
-     * @return array<string, string>
-     */
-    protected function promptForMissingArgumentsUsing(): array
-    {
-        return [
-            'repository' => fn () => multiselect(
-                label: 'Choose repositories to sync',
-                options: Repository::pluck('name'),
-                required: true,
-            ),
-        ];
     }
 }

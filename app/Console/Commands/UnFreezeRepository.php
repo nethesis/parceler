@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use function Laravel\Prompts\select;
 
-class UnFreezeRepository extends Command implements PromptsForMissingInput
+class UnFreezeRepository extends Command
 {
     /**
      * The name and signature of the console command.
@@ -48,21 +48,5 @@ class UnFreezeRepository extends Command implements PromptsForMissingInput
         $repository->save();
 
         return self::SUCCESS;
-    }
-
-    /**
-     * Prompt for missing input arguments using the returned questions.
-     *
-     * @return array<string, string>
-     */
-    protected function promptForMissingArgumentsUsing(): array
-    {
-        return [
-            'repository' => fn () => select(
-                label: 'Choose repository to unfreeze',
-                options: Repository::pluck('name'),
-                required: true,
-            ),
-        ];
     }
 }

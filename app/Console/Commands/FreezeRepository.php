@@ -4,12 +4,9 @@ namespace App\Console\Commands;
 
 use App\Models\Repository;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-use function Laravel\Prompts\select;
-
-class FreezeRepository extends Command implements PromptsForMissingInput
+class FreezeRepository extends Command
 {
     /**
      * The name and signature of the console command.
@@ -53,21 +50,5 @@ class FreezeRepository extends Command implements PromptsForMissingInput
         $repository->save();
 
         return self::SUCCESS;
-    }
-
-    /**
-     * Prompt for missing input arguments using the returned questions.
-     *
-     * @return array<string, string>
-     */
-    protected function promptForMissingArgumentsUsing(): array
-    {
-        return [
-            'repository' => fn () => select(
-                label: 'Choose repository to freeze',
-                options: Repository::pluck('name'),
-                required: true,
-            ),
-        ];
     }
 }
