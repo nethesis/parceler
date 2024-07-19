@@ -159,7 +159,15 @@ To deploy the service, you can find the related files needed in the `deploy` dir
   the `v4` or `v5` files, depending on the podman version you want to deploy. Remember to copy the `.env` production
   file to the `%S/parceler.env` directory.
 
-### Repository configuration
+### Additional Configuration
+
+If you're using `rclone` to sync the repositories, you can add the configuration file to the container by adding
+additional environment variables, documentation can be
+found [in the documentation](https://rclone.org/docs/#config-file).
+
+## Usage
+
+### Adding a repository
 
 To add a repository, you need to enter to the `php` container and run the following command:
 
@@ -181,21 +189,12 @@ The command will guide you through the process of adding a repository, here's th
 
 Once the repository is added, a sync job will be created and the worker will start syncing the repository.
 
-### Additional Configuration
+### List repositories
 
-If you're using `rclone` to sync the repositories, you can add the configuration file to the container by either
-mounting the file to the container as a file or by adding the configuration to the container.
-
-For example, to add it in a `v4` systemd service file, you can add the following line:
+To list all the repositories, you can use the `php artisan repository:list` command.
 
 ```bash
---volume %S/rclone.conf:/var/www/html/rclone.conf:Z
-```
-
-Then, when configuring the repository, you can use the `rclone` command to sync the repository.
-
-```bash
-rclone sync --config rclone.conf ...
+php artisan repository:list
 ```
 
 ### Repo Sync
@@ -204,7 +203,7 @@ Repository syncs are dispatched by the scheduler daily. If you want to manually 
 `php artisan repository:sync {repository_name}` command.
 
 ```bash
-php artisan repository:sync cool_repository
+php artisan repository:sync {repository_name}
 ```
 
 ### Freezing repositories
@@ -212,17 +211,49 @@ php artisan repository:sync cool_repository
 To freeze a repository, you can use the `php artisan repository:freeze {repository_name}` command.
 
 ```bash
-php artisan repository:freeze cool_repository
+php artisan repository:freeze {repository_name}
 ```
 
-Parcel will prompt for the repository name if not provided.
+Advanced usage can be achieved by providing a custom path like so:
+
+```bash
+php artisan repository:freeze {repository_name} {path}
+```
+
+Please remember:
+
+- The path is relative to the storage disk.
+- The path won't be validated, so make sure it's correct.
 
 ### Unfreezing repositories
 
 To unfreeze a repository, you can use the `php artisan repository:unfreeze {repository_name}` command.
 
 ```bash
-php artisan repository:unfreeze cool_repository
+php artisan repository:unfreeze {repository_name}
 ```
 
-Parcel will prompt for the repository name if not provided.
+### Listing files in a repository
+
+Since there's a possibility to have a remote disk as a repo, the following command will list the files in the directory
+that is currently being served. The output is `grep` friendly.
+
+```bash
+php artisan repository:files {repository_name}
+```
+
+You can specify the path to list the files in a specific directory.
+
+```bash
+php artisan repository:files {repository_name} {path}
+```
+
+### List repository snapshots
+
+To list all the snapshots of a repository, you can use the `php artisan snapshot:list {repository_name}` command, you'll
+be provided the folder that are snapshotted and which one is currently being served.
+
+```bash
+php artisan snapshot:list {repository_name}
+```
+
