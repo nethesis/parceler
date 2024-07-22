@@ -38,7 +38,7 @@ USER www-data
 FROM base AS production
 ARG PHP_EXTENSIONS
 ARG ADDITIONAL_PACKAGES
-RUN apk add --no-cache \
+RUN apk add --no-cache ${ADDITIONAL_PACKAGES} \
     && install-php-extensions ${PHP_EXTENSIONS} opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY containers/php/config/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
