@@ -1,9 +1,0 @@
-[Pod]
-PodName=parceler
-PublishPort=8080:80
-
-[Service]
-Restart=always
-
-[Install]
-WantedBy=default.target

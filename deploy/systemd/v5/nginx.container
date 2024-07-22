@@ -1,7 +1,0 @@
-[Container]
-Pod=parceler.pod
-Image=ghcr.io/nethesis/parceler-nginx:latest
-ContainerName=parceler-nginx
-Volume=/etc/localtime:/etc/localtime:ro
-Environment=FPM_HOST=parceler-php
-Environment=FPM_PORT=9000
