@@ -10,7 +10,7 @@ ADD --chmod=777 \
     --checksum=sha256:206a8f9b2177703fc5aa924d85ad6c72e82413e2d09635b4c9c82a1b65b5b3d5 \
     https://github.com/eficode/wait-for/releases/download/v2.2.4/wait-for /usr/local/bin/wait-for
 # configure entrypoints and image
-RUN echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1" > /etc/crontabs/www-data
+RUN echo "* * * * * cd /var/www/html && php artisan schedule:run" > /etc/crontabs/www-data
 COPY --chmod=777 containers/php/entrypoint.sh /usr/local/sbin/entrypoint
 ENTRYPOINT ["entrypoint"]
 CMD ["php-fpm"]
