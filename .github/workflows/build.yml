@@ -57,6 +57,8 @@ jobs:
             ./docker-bake.hcl
             ${{ steps.meta-php.outputs.bake-file }}
             ${{ steps.meta-nginx.outputs.bake-file }}
+          sbom: true
+          provenance: true
           set: |
             php.cache-to=type=gha,mode=max,scope=php
             php.cache-from=type=gha,scope=php
