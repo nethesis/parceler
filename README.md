@@ -2,6 +2,66 @@
 
 Repo management for Nethsecurity installations.
 
+## Application Structure
+
+The application is structured as follows:
+
+- `nginx`: Nginx frontend that handles the http requests and proxies them to the php application.
+- `php`: Main application that handles the logic and dispatches the jobs.
+- `scheduler`: Scheduler that handles cron jobs for the php application.
+- `worker`: Worker that handles the jobs dispatched by the php application.
+
+The storage can be configured to use different disks, however a local shared storage is mandatory due to the `sqlite`
+database that `php`, `scheduler` and `worker` containers share.
+
+## Application Behavior
+
+Base file request:
+
+```mermaid
+sequenceDiagram
+    client ->> nginx/php: Request file
+    database ->> nginx/php: Get repository
+    opt repository not found
+        nginx/php ->> client: 404 Not Found
+    end
+    database ->> nginx/php: Check cache
+    alt cache miss
+        nginx/php ->> my: Ask for authorization
+        my ->> nginx/php: 
+        alt authorized
+            nginx/php ->> database: Save cache
+        else not authorized
+            nginx/php ->> client: 403 Forbidden
+        end
+    end
+    nginx/php ->> filesystem: Check if file exists
+    alt file does not exists
+        nginx/php ->> client: 404 Not Found
+    else filesystem supports temporary links
+        nginx/php ->> client: Redirect to filesystem link 
+        client ->> filesystem: Request file
+    else manual download
+        filesystem ->> nginx/php: 
+        nginx/php ->> client: Download file
+    end
+```
+
+Job dispatch sequence:
+
+```mermaid
+sequenceDiagram
+    participant php
+    participant scheduler
+    participant database
+    
+    scheduler ->> database: Dispatch job
+    php ->> database: Dispatch job
+    database ->> worker: Loads job
+    worker ->> worker: Run job
+    worker ->> database: Clear job
+```
+
 ## Development Setup
 
 ### Prerequisites
@@ -166,6 +226,28 @@ additional environment variables, documentation can be
 found [in the documentation](https://rclone.org/docs/#config-file).
 
 ## Usage
+
+### Maintenance mode
+
+To avoid any issues with the files served by the service, if you are operating with the files, you can put the service
+in maintenance mode, this will prevent any new requests from being processed and will return a 503 status code. Be aware
+that even crons and queues will stop working, to force queues you
+can [resort to this command](https://laravel.com/docs/11.x/queues#maintenance-mode-queues).
+To enable maintenance mode, you can use the following command:
+
+```bash
+php artisan down
+```
+
+To disable maintenance mode, you can use the following command:
+
+```bash
+php artisan up
+```
+
+Additional configuration can be provided to the application, such as automatic redirects or have a token that allows the
+access. Additional configuration can be found
+in [documentation](https://laravel.com/docs/11.x/configuration#maintenance-mode).
 
 ### Adding a repository
 
