@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/nethesis/parceler/compare/v0.3.0...v0.3.1) (2024-07-22)
+
+
+### Bug Fixes
+
+* added more verbosity to crond commands ([cdbe052](https://github.com/nethesis/parceler/commit/cdbe052afb8b623e84499c1b9a6748756f4e3a86))
+* missing log level for crond ([5b563dc](https://github.com/nethesis/parceler/commit/5b563dc046e9e0a978a97acf9aa7a399320c8561))
+
 ## [0.3.0](https://github.com/nethesis/parceler/compare/v0.2.1...v0.3.0) (2024-07-22)
 
 
