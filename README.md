@@ -2,6 +2,9 @@
 
 Repo management for Nethsecurity installations.
 
+Something went wrong with some packages? Go straight to
+the [faulty packages section](#list-of-behaviours-in-case-of-distribution-of-faulty-packages). :rocket:
+
 ## Application Structure
 
 The application is structured as follows:
@@ -290,6 +293,8 @@ php artisan repository:sync {repository_name}
 
 ### Freezing repositories
 
+Freezing a repository will prevent the system to use the normal defer release using the snapshots. This won't halt
+syncs, so you can freeze the repository to avoid a faulty package, you then unfreeze it to skip faulty packages.
 To freeze a repository, you can use the `php artisan repository:freeze {repository_name}` command.
 
 ```bash
@@ -330,6 +335,16 @@ You can specify the path to list the files in a specific directory.
 php artisan repository:files {repository_name} {path}
 ```
 
+This is useful when looking for a specific package that is causing issues like this:
+
+```bash
+php artisan repository:files {repository_name} . | grep {package_name}
+```
+
+Using `.` as path everything on the storage will be listed, allowing to find for each snapshot the package that has been
+released. Remember that `source/{repository_name}` folder is always the latest sync, while `snapshots/{repository_name}`
+are the daily syncs.
+
 ### List repository snapshots
 
 To list all the snapshots of a repository, you can use the `php artisan snapshot:list {repository_name}` command, you'll
@@ -339,3 +354,30 @@ be provided the folder that are snapshotted and which one is currently being ser
 php artisan snapshot:list {repository_name}
 ```
 
+## List of behaviours in case of distribution of faulty packages
+
+The following list is a guide on how to handle the distribution of faulty packages, to find which of the snapshots has a
+faulty package go to the [list repository files](#listing-files-in-a-repository) section.
+
+- **Community repository has a faulty package**:
+  Try to fix the issue before the daily sync happens, otherwise follow through in the next steps.
+
+- **Faulty package is in the snapshot `X`**:
+  You can safely delete the faulty snapshot, Parceler will use the oldest snapshot available inside the `delay`
+  timer given for each repo.
+
+- **Faulty package is in snapshot `X`, but community has a fix**:
+  You can manually [sync the repository](#repo-sync) to get the latest snapshot (if you don't have it already),
+  then delete all the snapshots with the faulty package, Parceler will have the same behaviour as in the previous
+  step.
+
+- **Faulty package is in snapshot `X`, with no fix available**:
+  You can [freeze the repository](#freezing-repositories) to avoid the faulty package, then when a fix is
+  eventually released you can [unfreeze the repository](#unfreezing-repositories) to skip the faulty package.
+
+## FAQ
+
+### How do I know when the latest sync happened?
+
+You can check the timestamp of the latest snapshot for each repository, otherwise you can check the `worker` container
+logs.
