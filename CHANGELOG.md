@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.3.0](https://github.com/nethesis/parceler/compare/v0.2.1...v0.3.0) (2024-07-22)
+
+
+### Features
+
+* added helper commands ([d719798](https://github.com/nethesis/parceler/commit/d719798c1176deb8f0653723b756bff0925b7906))
+* added repository:list command ([632d2df](https://github.com/nethesis/parceler/commit/632d2dfe1584af315c5a00cc7a7d974996ae1ed1))
+
+
+### Bug Fixes
+
+* fixing issue with composer in prod environment ([a9e9ce6](https://github.com/nethesis/parceler/commit/a9e9ce68b179b04f8b7f48a8e98bb1ebc20d6e6f))
+
+
+### Miscellaneous Chores
+
+* **deps:** lockfile maintainance ([2c4a30c](https://github.com/nethesis/parceler/commit/2c4a30c1157ecb5864e27a0ff7cb14481d85ca0b))
+* **deps:** updated build environments ([1a11909](https://github.com/nethesis/parceler/commit/1a1190921adfe5e955e3252d0e0a732ff9dcf5cf))
+* removed scheduler and worker from dev environment ([adbc31e](https://github.com/nethesis/parceler/commit/adbc31ea0349268846ec945017fdc02a621fe099))
+
 ## [0.2.1](https://github.com/nethesis/parceler/compare/v0.2.0...v0.2.1) (2024-06-19)
 
 
