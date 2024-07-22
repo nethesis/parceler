@@ -23,19 +23,3 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - .:/var/www/html
-  worker:
-    extends:
-      service: php
-    stop_signal: SIGKILL
-    command: worker
-    environment:
-      PHP_HOST: php
-      PHP_PORT: 9000
-  scheduler:
-    extends:
-      service: php
-    stop_signal: SIGKILL
-    command: scheduler
-    environment:
-      PHP_HOST: php
-      PHP_PORT: 9000
