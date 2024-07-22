@@ -21,7 +21,7 @@ elif [ "$1" = "scheduler" ]; then
     if [ "$APP_ENV" != "local" ]; then
         php artisan optimize
     fi
-    set -- crond -f -d
+    set -- crond -f -d 8
 elif [ "$1" = "worker" ]; then
     wait-for "${PHP_HOST:?Missing PHP_HOST}:${PHP_PORT:?Missing PHP_PORT}" -t 60
     if [ "$APP_ENV" != "local" ]; then
