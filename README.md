@@ -320,6 +320,12 @@ To unfreeze a repository, you can use the `php artisan repository:unfreeze {repo
 php artisan repository:unfreeze {repository_name}
 ```
 
+### Force release of snapshots
+
+The system will automatically use the oldest snapshot available inside the `delay` timer given for each repo. However,
+if you need to push forward the release of some packages you can just delete the older snapshots through the filesystem
+used. The system will automatically adapt to the new oldest snapshot available.
+
 ### Listing files in a repository
 
 Since there's a possibility to have a remote disk as a repo, the following command will list the files in the directory
@@ -351,7 +357,7 @@ To list all the snapshots of a repository, you can use the `php artisan snapshot
 be provided the folder that are snapshotted and which one is currently being served.
 
 ```bash
-php artisan snapshot:list {repository_name}
+php artisan repository:snapshots {repository_name}
 ```
 
 ## List of behaviours in case of distribution of faulty packages
