@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/nethesis/parceler/compare/v0.3.1...v0.3.2) (2024-11-14)
+
+
+### Miscellaneous Chores
+
+* **deps:** lock file maintenance ([59cfa8d](https://github.com/nethesis/parceler/commit/59cfa8d2bf7ee4b9d76814760e3950951c40233f))
+
 ## [0.3.1](https://github.com/nethesis/parceler/compare/v0.3.0...v0.3.1) (2024-07-22)
 
 
