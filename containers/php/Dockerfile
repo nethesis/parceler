@@ -1,7 +1,7 @@
 ARG PHP_EXTENSIONS="pcntl"
 ARG ADDITIONAL_PACKAGES="rclone sqlite"
 
-FROM docker.io/php:8.3.9-fpm-alpine AS base
+FROM docker.io/php:8.3.13-fpm-alpine AS base
 WORKDIR /var/www/html
 # install software needed for all environments
 COPY --from=docker.io/composer:2.7.7 /usr/bin/composer /usr/local/bin/composer
