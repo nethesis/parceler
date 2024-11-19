@@ -3,6 +3,7 @@
 use App\Jobs\SyncRepository;
 use App\Models\Repository;
 use Illuminate\Support\Facades\Queue;
+
 use function Pest\Laravel\artisan;
 use function Pest\Laravel\assertDatabaseHas;
 

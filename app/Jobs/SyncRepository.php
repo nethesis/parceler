@@ -24,9 +24,7 @@ class SyncRepository implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private readonly Repository $repository)
-    {
-    }
+    public function __construct(private readonly Repository $repository) {}
 
     /**
      * Execute the job.

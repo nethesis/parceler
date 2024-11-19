@@ -41,7 +41,7 @@ test('can sync repository from command line', function ($command) {
 
 test('repository upstream processing', function () {
     $repository = Repository::factory()->create(['sub_dir' => 'example']);
-    $listener = new ProcessRepositoryUpstream();
+    $listener = new ProcessRepositoryUpstream;
     $sourcePath = config('repositories.source_folder').'/'.$repository->name;
     $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
     Event::fake();
@@ -68,7 +68,7 @@ test('cleanup old directories', function () {
         Storage::createDirectory($snapshotPath.'/'.now()->subDays(3)->toAtomString());
         Storage::createDirectory($snapshotPath.'/'.now()->subDays(2)->toAtomString());
         Storage::createDirectory($snapshotPath.'/'.now()->subDay()->toAtomString());
-        $listener = new CleanRepository();
+        $listener = new CleanRepository;
         $listener->handle(new SnapshotCreated($repository));
         Storage::assertMissing($snapshotPath.'/'.now()->subDays(3)->toAtomString());
         Storage::assertMissing($snapshotPath.'/'.now()->subDays(2)->toAtomString());
@@ -88,7 +88,7 @@ test('cleanup old directories with frozen dir', function () {
         Storage::createDirectory($snapshotPath.'/'.now()->subDays(2)->toAtomString());
         Storage::createDirectory($snapshotPath.'/'.now()->subDay()->toAtomString());
         Storage::createDirectory($snapshotPath.'/'.$repository->freeze);
-        $listener = new CleanRepository();
+        $listener = new CleanRepository;
         $listener->handle(new SnapshotCreated($repository));
         Storage::assertMissing($snapshotPath.'/'.now()->subDays(3)->toAtomString());
         Storage::assertMissing($snapshotPath.'/'.now()->subDays(2)->toAtomString());

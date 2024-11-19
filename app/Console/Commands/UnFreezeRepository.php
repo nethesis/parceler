@@ -4,10 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Repository;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
-use function Laravel\Prompts\select;
 
 class UnFreezeRepository extends Command
 {

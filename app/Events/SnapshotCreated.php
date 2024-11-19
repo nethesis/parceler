@@ -19,7 +19,5 @@ class SnapshotCreated
     /**
      * Create a new event instance.
      */
-    public function __construct(public readonly Repository $repository)
-    {
-    }
+    public function __construct(public readonly Repository $repository) {}
 }

@@ -9,9 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CommunityLicenceCheck
 {
-    public function __construct(readonly private LicenceVerification $licenceVerification)
-    {
-    }
+    public function __construct(readonly private LicenceVerification $licenceVerification) {}
 
     /**
      * Handle an incoming request.
