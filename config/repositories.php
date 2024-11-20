@@ -20,4 +20,9 @@ return [
      * This directory contains the snapshots of synced repositories.
      */
     'snapshots' => env('REPOSITORY_BASE_FOLDER', 'snapshots'),
+
+    /*
+     * Milestone release authentication token
+     */
+    'milestone_token' => env('REPOSITORY_MILESTONE_TOKEN'),
 ];

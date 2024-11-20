@@ -188,6 +188,8 @@ While some of the values are self-explanatory, there are a few that you need to 
 - `APP_URL`: The full URL where the application is reached from, while most of the functionalities will work with a
   wrong value, the url generation is based off this value.
 - `FILESYSTEM_DISK`: Disk to use during production, works same as development, more info in the development setup.
+- `REPOSITORY_MILESTONE_TOKEN`: Token used to trigger from remote the milestone creation, you can set this to a random
+  value, it's used to avoid unwanted requests.
 
 ### Container Configuration
 
@@ -213,14 +215,8 @@ otherwise you will lose reference to endpoints and snapshots (or files, if you'r
 
 ### First deploy
 
-To deploy the service, you can find the related files needed in the `deploy` directory:
-
-- `compose`: Contains the `docker-compose.yml` file, this file can deploy the full stack once copied to the server and
-  then using `docker compose up -d`, remember to copy the `.env` production file to the same directory where you store
-  the compose file.
-- `systemd`: Uses `systemd` and `podman` to deploy the service, you can find the service files in the `systemd`. Use
-  the `v4` or `v5` files, depending on the podman version you want to deploy. Remember to copy the `.env` production
-  file to the `%S/parceler.env` directory.
+An example of a deployment can be found under the `deploy` directory, you can use the `deploy/docker-compose.yml` file
+to deploy the full stack. And replicate the same structure in your server.
 
 ### Additional Configuration
 
@@ -267,8 +263,8 @@ The command will guide you through the process of adding a repository, here's th
 - `command`: the command the worker will run to sync the repository it can be anything available in the container.
   Save the content of the repository under the path `source/{repository_name}` in the disk you're using.
   (e.g. if you're using the local disk, save the content of the repository
-  under `storage/app/source/repository_name`). `rclone` binary is available in the container, to add configuration file
-  follow the [Additional Configuration](#additional-configuration) section.
+  under `storage/app/source/{repository_name}`). `rclone` binary is available in the container, to add configuration
+  file follow the [Additional Configuration](#additional-configuration) section.
 - `source_folder`: if repository files are stored in a subfolder, you can specify it here, otherwise leave it empty.
 - `delay`: how many days the upstream files are delayed.
 
@@ -358,6 +354,28 @@ be provided the folder that are snapshotted and which one is currently being ser
 
 ```bash
 php artisan repository:snapshots {repository_name}
+```
+
+### Milestone release
+
+A Milestone Release is a process that wipes all the snapshots of a repository and then creates one with the latest sync.
+This is useful when you want to release a new version of a repository, or when you want to force the release of a
+specific set of packages.
+
+To trigger a milestone release, this can be done by both of the following:
+
+- CLI
+
+```bash
+php artisan repository:milestone {repository_name}
+```
+
+- CURL
+
+Additional authentication must be provided, the token is set in the `.env` file under the `REPOSITORY_MILESTONE_TOKEN`.
+
+```bash
+curl -X POST -H Accept:application/json -H Authorization:Bearer <token> <url>/repository/<repository_name>/milestone
 ```
 
 ## List of behaviours in case of distribution of faulty packages
