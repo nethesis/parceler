@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/nethesis/parceler/compare/v0.3.2...v0.4.0) (2024-11-25)
+
+
+### Features
+
+* added milestone dispatch feature ([fc890d5](https://github.com/nethesis/parceler/commit/fc890d5f0c4258848e30d5cb501bcfd172f24639))
+
+
+### Miscellaneous Chores
+
+* **deps:** updating container environment ([5b0646b](https://github.com/nethesis/parceler/commit/5b0646b1448ea86944f33e01e33a4f44b21dd4a4))
+
 ## [0.3.2](https://github.com/nethesis/parceler/compare/v0.3.1...v0.3.2) (2024-11-14)
 
 
