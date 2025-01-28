@@ -60,5 +60,4 @@ jobs:
             ${{ steps.meta-nginx.outputs.bake-file }}
           sbom: true
           provenance: true
-          set: |
-            *.output=type=registry
+          push: true
