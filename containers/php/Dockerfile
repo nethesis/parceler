@@ -35,6 +35,14 @@ ENV XDEBUG_MODE=develop,debug,coverage,profile
 ENV XDEBUG_CONFIG="client_host=host.docker.internal"
 USER www-data
 
+FROM base AS vendor
+COPY composer.json .
+COPY composer.lock .
+RUN composer install --no-dev --no-scripts --no-cache --ignore-platform-reqs
+
+FROM vendor AS vendor_dev
+RUN composer install --no-scripts --no-cache --ignore-platform-reqs
+
 FROM base AS production
 ARG PHP_EXTENSIONS
 ARG ADDITIONAL_PACKAGES
@@ -43,17 +51,17 @@ RUN apk add --no-cache ${ADDITIONAL_PACKAGES} \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY containers/php/config/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 ARG COMPOSER_ALLOW_SUPERUSER=1
-COPY composer.json .
-COPY composer.lock .
-RUN composer install --no-dev --no-scripts --no-cache
-COPY app ./app
-COPY bootstrap ./bootstrap
-COPY config ./config
-COPY database ./database
-COPY public ./public
-COPY resources ./resources
-COPY routes ./routes
-COPY --chown=www-data:www-data storage ./storage
+COPY --from=vendor /var/www/html/composer.json .
+COPY --from=vendor /var/www/html/composer.lock .
+COPY --from=vendor /var/www/html/vendor vendor
+COPY app app
+COPY bootstrap bootstrap
+COPY config config
+COPY database database
+COPY public public
+COPY resources resources
+COPY routes routes
+COPY --chown=www-data:www-data storage storage
 COPY artisan .
 RUN composer dump-autoload --optimize \
     && echo -n "opcache.max_accelerated_files=" >> "$PHP_INI_DIR/conf.d/opcache.ini" \
@@ -61,3 +69,27 @@ RUN composer dump-autoload --optimize \
     && rm /usr/local/bin/composer \
     && rm /usr/local/sbin/install-php-extensions
 VOLUME ["/var/www/html/storage"]
+
+FROM base AS testing
+ARG PHP_EXTENSIONS
+ARG ADDITIONAL_PACKAGES
+RUN apk add --no-cache ${ADDITIONAL_PACKAGES} \
+    && install-php-extensions ${PHP_EXTENSIONS} xdebug
+COPY --from=vendor_dev /var/www/html/composer.json .
+COPY --from=vendor_dev /var/www/html/composer.lock .
+COPY --from=vendor_dev /var/www/html/vendor vendor
+COPY app app
+COPY bootstrap bootstrap
+COPY config config
+COPY database database
+COPY public public
+COPY resources resources
+COPY routes routes
+COPY --chown=www-data:www-data storage storage
+COPY tests tests
+COPY artisan .
+COPY phpunit.xml .
+COPY .env.example .env
+RUN composer dump-autoload --optimize \
+    && php artisan key:generate \
+    && php artisan test

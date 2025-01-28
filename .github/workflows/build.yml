@@ -7,6 +7,7 @@ on:
     tags:
       - "**"
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -60,8 +61,4 @@ jobs:
           sbom: true
           provenance: true
           set: |
-            php.cache-to=type=gha,mode=max,scope=php
-            php.cache-from=type=gha,scope=php
-            nginx.cache-to=type=gha,mode=max,scope=nginx
-            nginx.cache-from=type=gha,scope=nginx
             *.output=type=registry
