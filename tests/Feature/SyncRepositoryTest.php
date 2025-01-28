@@ -46,9 +46,9 @@ test('repository upstream processing', function () {
     $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
     Event::fake();
     Storage::fake();
-    UploadedFile::fake()->create('example/file1.txt')->storeAs("$sourcePath/example", 'file1.txt');
-    UploadedFile::fake()->create('example/file2.txt')->storeAs("$sourcePath/example", 'file2.txt');
-    UploadedFile::fake()->create('example/file3.txt')->storeAs("$sourcePath/example", 'file3.txt');
+    Storage::put("$sourcePath/example/file1.txt", 'file1');
+    Storage::put("$sourcePath/example/file2.txt", 'file2');
+    Storage::put("$sourcePath/example/file3.txt", 'file3');
     $listener->handle(new RepositorySynced($repository));
     Storage::assertExists("$snapshotPath/".now()->toAtomString().'/file1.txt');
     Storage::assertExists("$snapshotPath/".now()->toAtomString().'/file2.txt');

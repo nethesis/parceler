@@ -29,11 +29,21 @@ it('can create a repository through cli', function () {
         ->expectsConfirmation('Do you want to sync the repository now?', 'yes')
         ->assertExitCode(0);
     assertDatabaseHas('repositories', $repository->toArray());
-    Queue::assertPushed(SyncRepository::class);
+    Queue::assertPushed(SyncRepository::class, 1);
+    $repository = Repository::factory()->make();
+    artisan('repository:create')
+        ->expectsQuestion('What is the name of the repository?', $repository->name)
+        ->expectsQuestion('Provide the command to be ran to sync this repository.', $repository->command)
+        ->expectsQuestion('Provide the folder where the data is.', $repository->source_folder)
+        ->expectsQuestion('Please provide how much time the repository must be kept back from upstream.', $repository->delay)
+        ->expectsConfirmation('Do you want to sync the repository now?')
+        ->assertExitCode(0);
+    assertDatabaseHas('repositories', $repository->toArray());
+    Queue::assertPushed(SyncRepository::class, 1);
 });
 
 it('can list repositories', function () {
-    $repositories = Repository::factory()->create([
+    Repository::factory()->create([
         'name' => 'test',
         'delay' => 1,
     ]);

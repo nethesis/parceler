@@ -51,8 +51,30 @@ it('can freeze repository with custom directory', function () {
         ->expectsOutput("Freezing repository '$repository->name' to '$directories[4]'...")
         ->assertSuccessful();
     $repository->refresh();
+    $repository->freeze = $directories[4];
 });
 
+it('can freeze repository', function () {
+    $repository = Repository::factory()->create([
+        'delay' => 7,
+    ]);
+    Storage::fake();
+    $directories = [
+        now()->subDays(8)->toAtomString(),
+        now()->subDays(6)->toAtomString(),
+        now()->subDays(5)->toAtomString(),
+        now()->subDays(4)->toAtomString(),
+        'cool_custom_directory',
+    ];
+    foreach ($directories as $directory) {
+        Storage::createDirectory($repository->snapshotDir().'/'.$directory);
+    }
+    artisan('repository:freeze', ['repository' => $repository->name])
+        ->expectsOutput("Freezing repository '$repository->name' to '$directories[1]'...")
+        ->assertSuccessful();
+    $repository->refresh();
+    $repository->freeze = $directories[1];
+});
 it('cannot unfroze not existing repository')
     ->artisan('repository:unfreeze', ['repository' => 'wrong_repo'])
     ->expectsOutput("Repository 'wrong_repo' not found.")

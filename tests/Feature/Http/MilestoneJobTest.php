@@ -1,7 +1,9 @@
 <?php
 
 use App\Jobs\MilestoneRelease;
+use App\Jobs\SyncRepository;
 use App\Models\Repository;
+use Illuminate\Support\Facades\Bus;
 
 use function Pest\Laravel\post;
 use function Pest\Laravel\withToken;
@@ -31,4 +33,16 @@ it('cannot dispatch a MilestoneRelease job for a non-existent repository', funct
     withToken(config('repositories.milestone_token'))
         ->post('repository/non-existent/milestone')
         ->assertNotFound();
+});
+
+test('dispatch MilestoneRelease', function () {
+    $repo = Repository::factory()->create();
+    Storage::fake();
+    Storage::createDirectory($repo->snapshotDir(). '/snapshot1');
+    Storage::createDirectory($repo->snapshotDir(). '/snapshot2');
+    Bus::fake(SyncRepository::class);
+    MilestoneRelease::dispatch($repo);
+    Bus::assertDispatched(SyncRepository::class);
+    Storage::assertMissing($repo->snapshotDir(). '/snapshot1');
+    Storage::assertMissing($repo->snapshotDir(). '/snapshot2');
 });
