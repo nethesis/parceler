@@ -10,8 +10,10 @@ on:
   workflow_call:
 
 permissions:
-  contents: read
+  contents: write
   packages: write
+  actions: read
+  security-events: write
 
 jobs:
   build:
@@ -71,6 +73,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ steps.php-scan.outputs.sarif }}
+          category: grype-php-report
 
       - name: Generate SBOM for nginx
         uses: anchore/sbom-action@v0
@@ -88,3 +91,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ steps.nginx-scan.outputs.sarif }}
+          category: grype-nginx-report
