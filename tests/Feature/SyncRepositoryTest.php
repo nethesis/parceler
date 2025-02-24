@@ -6,7 +6,6 @@ use App\Jobs\SyncRepository;
 use App\Listeners\CleanRepository;
 use App\Listeners\ProcessRepositoryUpstream;
 use App\Models\Repository;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Process;

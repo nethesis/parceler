@@ -38,11 +38,11 @@ it('cannot dispatch a MilestoneRelease job for a non-existent repository', funct
 test('dispatch MilestoneRelease', function () {
     $repo = Repository::factory()->create();
     Storage::fake();
-    Storage::createDirectory($repo->snapshotDir(). '/snapshot1');
-    Storage::createDirectory($repo->snapshotDir(). '/snapshot2');
+    Storage::createDirectory($repo->snapshotDir().'/snapshot1');
+    Storage::createDirectory($repo->snapshotDir().'/snapshot2');
     Bus::fake(SyncRepository::class);
     MilestoneRelease::dispatch($repo);
     Bus::assertDispatched(SyncRepository::class);
-    Storage::assertMissing($repo->snapshotDir(). '/snapshot1');
-    Storage::assertMissing($repo->snapshotDir(). '/snapshot2');
+    Storage::assertMissing($repo->snapshotDir().'/snapshot1');
+    Storage::assertMissing($repo->snapshotDir().'/snapshot2');
 });
