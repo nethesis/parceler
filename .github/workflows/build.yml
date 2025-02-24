@@ -54,3 +54,37 @@ jobs:
           sbom: true
           provenance: true
           push: true
+
+      - name: Generate SBOM for php
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ fromJSON(steps.meta-php.outputs.json).tags[0] }}
+          output-file: php-sbom.spdx.json
+          dependency-snapshot: true
+      - name: Scan php
+        uses: anchore/scan-action@v6
+        id: php-scan
+        with:
+          sbom: php-sbom.spdx.json
+          fail-build: false
+      - name: Upload report to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.php-scan.outputs.sarif }}
+
+      - name: Generate SBOM for nginx
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ fromJSON(steps.meta-nginx.outputs.json).tags[0] }}
+          output-file: nginx-sbom.spdx.json
+          dependency-snapshot: true
+      - name: Scan nginx
+        uses: anchore/scan-action@v6
+        id: nginx-scan
+        with:
+          sbom: nginx-sbom.spdx.json
+          fail-build: false
+      - name: Upload report to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.nginx-scan.outputs.sarif }}
