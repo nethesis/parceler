@@ -89,7 +89,7 @@ COPY --chown=www-data:www-data storage storage
 COPY tests tests
 COPY artisan .
 COPY phpunit.xml .
-COPY .env.example .env
+COPY .env.example .env.testing
 RUN composer dump-autoload --optimize \
-    && php artisan key:generate \
-    && php artisan test
+    && php artisan key:generate --env=testing
+USER www-data

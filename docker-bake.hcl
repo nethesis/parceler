@@ -30,15 +30,3 @@ target "nginx" {
 group "production" {
     targets = ["php", "nginx"]
 }
-
-target "testing" {
-    dockerfile = "containers/php/Dockerfile"
-    context    = "."
-    target     = "testing"
-    output     = [
-        "type=cacheonly"
-    ]
-    cache-from = [
-        "type=gha,scope=php"
-    ]
-}
