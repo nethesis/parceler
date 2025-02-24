@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.0](https://github.com/nethesis/parceler/compare/v0.4.0...v1.0.0) (2025-02-24)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump to php 8.4.4 ([869a747](https://github.com/nethesis/parceler/commit/869a74788c56c411199489158c366f678b588532))
+* **deps:** bumped unused frontend deps ([3c3da18](https://github.com/nethesis/parceler/commit/3c3da188de95105b26ecc216e91852601df31c98))
+* **deps:** lockfile maintainance ([8f9def3](https://github.com/nethesis/parceler/commit/8f9def310f964753f23a5ca37e7b7ca5ef5ae437))
+* **deps:** lockfile maintenance ([4b22afc](https://github.com/nethesis/parceler/commit/4b22afcfcaec30078187de64ba70e2c41c42cfa6))
+* **deps:** updated deps ([128c7f1](https://github.com/nethesis/parceler/commit/128c7f15d18a7ffb4f600cfd969ffd36d09d7170))
+* **deps:** updated pest testing ([e0664c5](https://github.com/nethesis/parceler/commit/e0664c5c6e8b9ba323ae32e548ce7a7c0e8d4703))
+* upgrade to laravel 12 ([#16](https://github.com/nethesis/parceler/issues/16)) ([62334a9](https://github.com/nethesis/parceler/commit/62334a91deae6c05d6db087d548506ac9d9e6193))
+
 ## [0.4.0](https://github.com/nethesis/parceler/compare/v0.3.2...v0.4.0) (2024-11-25)
 
 
