@@ -1,0 +1,19 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:base",
+        ":disableDependencyDashboard",
+        ":prHourlyLimitNone",
+        ":semanticCommitScopeDisabled",
+        ":automergeMinor",
+        ":assignee(@Tbaile)"
+    ],
+    "vulnerabilityAlerts": {
+        "labels": [
+            "security"
+        ],
+        "assignees": [
+            "@Tbaile"
+        ]
+    }
+}
