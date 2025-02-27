@@ -28,12 +28,14 @@ class RepositorySnapshots extends Command
     public function handle(): void
     {
         $repository = Repository::where('name', $this->argument('repository'))->firstOrFail();
-        $snapshots = collect(Storage::directories($repository->snapshotDir()))->map(function ($snapshot) use ($repository) {
-            return [
-                'Snapshot' => basename($snapshot),
-                'Active' => $snapshot === $repository->getStablePath() ? 'Yes' : 'No',
-            ];
-        });
+        $snapshots = collect(Storage::directories($repository->snapshotDir()))
+            ->sort()
+            ->map(function ($snapshot) use ($repository) {
+                return [
+                    'Snapshot' => basename($snapshot),
+                    'Active' => $snapshot === $repository->getStablePath() ? 'Yes' : 'No',
+                ];
+            });
         $this->table(['Snapshot', 'Active'], $snapshots);
     }
 }
