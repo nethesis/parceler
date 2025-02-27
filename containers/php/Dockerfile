@@ -1,5 +1,5 @@
 ARG PHP_EXTENSIONS="pcntl"
-ARG ADDITIONAL_PACKAGES="rclone sqlite"
+ARG ADDITIONAL_PACKAGES="bash rclone sqlite"
 
 FROM php:8.4.4-fpm-alpine AS base
 WORKDIR /var/www/html
@@ -14,17 +14,18 @@ RUN echo "* * * * * cd /var/www/html && php artisan schedule:run" > /etc/crontab
 COPY --chmod=777 containers/php/entrypoint.sh /usr/local/sbin/entrypoint
 ENTRYPOINT ["entrypoint"]
 CMD ["php-fpm"]
-
-FROM base AS development
 ARG PHP_EXTENSIONS
 ARG ADDITIONAL_PACKAGES
+RUN apk add --no-cache ${ADDITIONAL_PACKAGES} \
+    && install-php-extensions ${PHP_EXTENSIONS}
+
+
+FROM base AS development
 RUN apk add --no-cache \
-        ${ADDITIONAL_PACKAGES} \
-        bash \
         git \
         shadow \
         sudo \
-    && install-php-extensions ${PHP_EXTENSIONS} xdebug \
+    && install-php-extensions xdebug \
     && mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
     && echo "ALL ALL=(ALL:ALL) NOPASSWD: ALL" > "/etc/sudoers.d/password_less_sudo"
 ARG UID
@@ -44,10 +45,7 @@ FROM vendor AS vendor_dev
 RUN composer install --no-scripts --no-cache --ignore-platform-reqs
 
 FROM base AS production
-ARG PHP_EXTENSIONS
-ARG ADDITIONAL_PACKAGES
-RUN apk add --no-cache ${ADDITIONAL_PACKAGES} \
-    && install-php-extensions ${PHP_EXTENSIONS} opcache \
+RUN install-php-extensions opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY containers/php/config/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 ARG COMPOSER_ALLOW_SUPERUSER=1
@@ -63,7 +61,8 @@ COPY resources resources
 COPY routes routes
 COPY --chown=www-data:www-data storage storage
 COPY artisan .
-RUN composer dump-autoload --optimize \
+RUN composer check-platform-reqs \
+    && composer dump-autoload --optimize \
     && echo -n "opcache.max_accelerated_files=" >> "$PHP_INI_DIR/conf.d/opcache.ini" \
     && echo $(find . -name "*.php" | wc -l | awk '{print (int($1/1000)+2)*1000}') >> "$PHP_INI_DIR/conf.d/opcache.ini" \
     && rm /usr/local/bin/composer \
@@ -71,10 +70,7 @@ RUN composer dump-autoload --optimize \
 VOLUME ["/var/www/html/storage"]
 
 FROM base AS testing
-ARG PHP_EXTENSIONS
-ARG ADDITIONAL_PACKAGES
-RUN apk add --no-cache ${ADDITIONAL_PACKAGES} \
-    && install-php-extensions ${PHP_EXTENSIONS} xdebug
+RUN install-php-extensions xdebug
 COPY --from=vendor_dev /var/www/html/composer.json .
 COPY --from=vendor_dev /var/www/html/composer.lock .
 COPY --from=vendor_dev /var/www/html/vendor vendor
@@ -90,6 +86,7 @@ COPY tests tests
 COPY artisan .
 COPY phpunit.xml .
 COPY .env.example .env.testing
-RUN composer dump-autoload --optimize \
+RUN composer check-platform-reqs \
+    && composer dump-autoload --optimize \
     && php artisan key:generate --env=testing
 USER www-data
