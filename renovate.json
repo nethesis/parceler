@@ -4,7 +4,6 @@
         "config:base",
         ":disableDependencyDashboard",
         ":prHourlyLimitNone",
-        ":semanticCommitScopeDisabled",
         ":automergeMinor",
         ":assignee(@Tbaile)"
     ],
