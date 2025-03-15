@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.0.1](https://github.com/nethesis/parceler/compare/v1.0.0...v1.0.1) (2025-03-15)
+
+
+### Bug Fixes
+
+* **deps:** update dependency laravel/framework to v12.2.0 ([#26](https://github.com/nethesis/parceler/issues/26)) ([0e7510a](https://github.com/nethesis/parceler/commit/0e7510a97b820cd8350d81877c3d9d04f2fa870c))
+* update dependency laravel/framework to v12.1.0 ([#25](https://github.com/nethesis/parceler/issues/25)) ([f4ae179](https://github.com/nethesis/parceler/commit/f4ae179817e65df189e82890d73f6729aa9c2213))
+* update dependency laravel/framework to v12.1.1 [security] ([#27](https://github.com/nethesis/parceler/issues/27)) ([c7a0ff4](https://github.com/nethesis/parceler/commit/c7a0ff4a7808f82d8d1c2abebfbaf3bba006495f))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency laravel/pint to v1.21.1 ([#29](https://github.com/nethesis/parceler/issues/29)) ([112058e](https://github.com/nethesis/parceler/commit/112058e68b12d9045a4096a07c5f69a72eae6532))
+* **deps:** update dependency laravel/pint to v1.21.2 ([#30](https://github.com/nethesis/parceler/issues/30)) ([561a540](https://github.com/nethesis/parceler/commit/561a540a4bbf1fa3b206fc6be66d7e730461ff1f))
+* **deps:** update docker.io/mlocati/php-extension-installer docker tag to v2.7.28 ([#28](https://github.com/nethesis/parceler/issues/28)) ([5c23db1](https://github.com/nethesis/parceler/commit/5c23db18d3d4f6aea7e3fdee6cf95b632f178ba5))
+* **deps:** update php docker tag to v8.4.5 ([#31](https://github.com/nethesis/parceler/issues/31)) ([3b06de5](https://github.com/nethesis/parceler/commit/3b06de5aea42d9079726e1a784586c93f031ad0d))
+* update docker.io/composer docker tag to v2.8.6 ([#24](https://github.com/nethesis/parceler/issues/24)) ([5511b11](https://github.com/nethesis/parceler/commit/5511b116964edfbb5799a81176462e606e467184))
+* update docker.io/mlocati/php-extension-installer docker tag to v2.7.25 ([#17](https://github.com/nethesis/parceler/issues/17)) ([ea58247](https://github.com/nethesis/parceler/commit/ea58247b49291634c9af6670f17a40a0f5d55cd4))
+* update docker.io/mlocati/php-extension-installer docker tag to v2.7.26 ([#22](https://github.com/nethesis/parceler/issues/22)) ([e09b8cb](https://github.com/nethesis/parceler/commit/e09b8cbbede4ef68afffd63e740692e90e1993d5))
+* update docker.io/mlocati/php-extension-installer docker tag to v2.7.27 ([#23](https://github.com/nethesis/parceler/issues/23)) ([c1bc00a](https://github.com/nethesis/parceler/commit/c1bc00a28ac7df48f8fa1e807ced532ba6d1c68c))
+* update nginx docker tag to v1.27.4 ([#18](https://github.com/nethesis/parceler/issues/18)) ([dd2aa27](https://github.com/nethesis/parceler/commit/dd2aa27be06277656d8cdd7002fc9b44edebaeaf))
+
 ## [1.0.0](https://github.com/nethesis/parceler/compare/v0.4.0...v1.0.0) (2025-02-24)
 
 
