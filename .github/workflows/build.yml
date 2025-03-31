@@ -51,8 +51,8 @@ jobs:
           targets: production
           files: |
             ./docker-bake.hcl
-            ${{ steps.meta-php.outputs.bake-file }}
-            ${{ steps.meta-nginx.outputs.bake-file }}
+            cwd://${{ steps.meta-php.outputs.bake-file }}
+            cwd://${{ steps.meta-nginx.outputs.bake-file }}
           sbom: true
           provenance: true
           push: true
