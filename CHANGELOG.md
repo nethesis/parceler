@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.0.1](https://github.com/nethesis/parceler/compare/v1.0.0...v1.0.1) (2025-04-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency laravel/framework to v12.2.0 ([#26](https://github.com/nethesis/parceler/issues/26)) ([0e7510a](https://github.com/nethesis/parceler/commit/0e7510a97b820cd8350d81877c3d9d04f2fa870c))
+* **deps:** update dependency laravel/framework to v12.3.0 ([#33](https://github.com/nethesis/parceler/issues/33)) ([4b37c05](https://github.com/nethesis/parceler/commit/4b37c0586ac1e2de32c465f529fec9f24c14b7a4))
+* **deps:** update dependency laravel/framework to v12.4.0 ([#35](https://github.com/nethesis/parceler/issues/35)) ([27509b6](https://github.com/nethesis/parceler/commit/27509b64b0ceeee07ef2d9d011012670ff84be47))
+* **deps:** update dependency laravel/framework to v12.4.1 ([#36](https://github.com/nethesis/parceler/issues/36)) ([5c904ac](https://github.com/nethesis/parceler/commit/5c904ac5718bdcd79c65d48a3f0587c28055dda1))
+* **deps:** update dependency laravel/framework to v12.5.0 ([#40](https://github.com/nethesis/parceler/issues/40)) ([8f7ddf4](https://github.com/nethesis/parceler/commit/8f7ddf4bfda3d7612ad8f4eb2166038da1bd3daf))
+* **deps:** update dependency laravel/framework to v12.6.0 ([#41](https://github.com/nethesis/parceler/issues/41)) ([49ebd41](https://github.com/nethesis/parceler/commit/49ebd415f9cc80431c130c7312ae145a59a8d5b4))
+* **deps:** update dependency laravel/framework to v12.7.2 ([#43](https://github.com/nethesis/parceler/issues/43)) ([880c321](https://github.com/nethesis/parceler/commit/880c3210856831620ee509a9229221575ccd907b))
+* update dependency laravel/framework to v12.1.0 ([#25](https://github.com/nethesis/parceler/issues/25)) ([f4ae179](https://github.com/nethesis/parceler/commit/f4ae179817e65df189e82890d73f6729aa9c2213))
+* update dependency laravel/framework to v12.1.1 [security] ([#27](https://github.com/nethesis/parceler/issues/27)) ([c7a0ff4](https://github.com/nethesis/parceler/commit/c7a0ff4a7808f82d8d1c2abebfbaf3bba006495f))
+
+
+### Miscellaneous Chores
+
+* **deps:** update aquasecurity/trivy-action action to v0.30.0 ([#38](https://github.com/nethesis/parceler/issues/38)) ([e95457b](https://github.com/nethesis/parceler/commit/e95457bf2925bcad8c078fa5b49c66ecdff38c33))
+* **deps:** update dependency laravel/pint to v1.21.1 ([#29](https://github.com/nethesis/parceler/issues/29)) ([112058e](https://github.com/nethesis/parceler/commit/112058e68b12d9045a4096a07c5f69a72eae6532))
+* **deps:** update dependency laravel/pint to v1.21.2 ([#30](https://github.com/nethesis/parceler/issues/30)) ([561a540](https://github.com/nethesis/parceler/commit/561a540a4bbf1fa3b206fc6be66d7e730461ff1f))
+* **deps:** update dependency nunomaduro/collision to v8.7.0 ([#32](https://github.com/nethesis/parceler/issues/32)) ([de3ed7b](https://github.com/nethesis/parceler/commit/de3ed7bb3141b1aa60b71dbfdd3850ed473a294d))
+* **deps:** update dependency nunomaduro/collision to v8.8.0 ([#42](https://github.com/nethesis/parceler/issues/42)) ([86e1468](https://github.com/nethesis/parceler/commit/86e1468bd0ccc71d4bbf733b95f398a58d33f863))
+* **deps:** update dependency pestphp/pest to v3.7.5 ([#34](https://github.com/nethesis/parceler/issues/34)) ([098af0d](https://github.com/nethesis/parceler/commit/098af0d2e184936d87a8a03897f086c07a58a831))
+* **deps:** update dependency pestphp/pest to v3.8.0 ([#37](https://github.com/nethesis/parceler/issues/37)) ([88f9c23](https://github.com/nethesis/parceler/commit/88f9c23891ae734dc7bae36f6e7b917b9bf2c747))
+* **deps:** update dependency pestphp/pest to v3.8.1 ([#44](https://github.com/nethesis/parceler/issues/44)) ([cd1dd6b](https://github.com/nethesis/parceler/commit/cd1dd6b281ebc6100f915c36d1c8a4c0a35c51c5))
+* **deps:** update dependency ubuntu to v24 ([#19](https://github.com/nethesis/parceler/issues/19)) ([1782021](https://github.com/nethesis/parceler/commit/1782021423e461feae47fb58479eba9874a26d7d))
+* **deps:** update dependency ubuntu to v24 ([#39](https://github.com/nethesis/parceler/issues/39)) ([023427c](https://github.com/nethesis/parceler/commit/023427c032e88f571d0673f9061c9bb5e5c415db))
+* **deps:** update docker.io/composer docker tag to v2.8.7 ([#46](https://github.com/nethesis/parceler/issues/46)) ([eaccf4c](https://github.com/nethesis/parceler/commit/eaccf4c9b00927231716918920cd033ffaad2213))
+* **deps:** update docker.io/mlocati/php-extension-installer docker tag to v2.7.28 ([#28](https://github.com/nethesis/parceler/issues/28)) ([5c23db1](https://github.com/nethesis/parceler/commit/5c23db18d3d4f6aea7e3fdee6cf95b632f178ba5))
+* **deps:** update docker.io/mlocati/php-extension-installer docker tag to v2.7.29 ([#45](https://github.com/nethesis/parceler/issues/45)) ([66fa261](https://github.com/nethesis/parceler/commit/66fa26122f65a31d1c333159a05e67f77d34ab71))
+* **deps:** update docker/bake-action action to v6 ([#20](https://github.com/nethesis/parceler/issues/20)) ([8f87deb](https://github.com/nethesis/parceler/commit/8f87debdad09d0b0e6574757858a282297c35778))
+* **deps:** update php docker tag to v8.4.5 ([#31](https://github.com/nethesis/parceler/issues/31)) ([3b06de5](https://github.com/nethesis/parceler/commit/3b06de5aea42d9079726e1a784586c93f031ad0d))
+* update docker.io/composer docker tag to v2.8.6 ([#24](https://github.com/nethesis/parceler/issues/24)) ([5511b11](https://github.com/nethesis/parceler/commit/5511b116964edfbb5799a81176462e606e467184))
+* update docker.io/mlocati/php-extension-installer docker tag to v2.7.25 ([#17](https://github.com/nethesis/parceler/issues/17)) ([ea58247](https://github.com/nethesis/parceler/commit/ea58247b49291634c9af6670f17a40a0f5d55cd4))
+* update docker.io/mlocati/php-extension-installer docker tag to v2.7.26 ([#22](https://github.com/nethesis/parceler/issues/22)) ([e09b8cb](https://github.com/nethesis/parceler/commit/e09b8cbbede4ef68afffd63e740692e90e1993d5))
+* update docker.io/mlocati/php-extension-installer docker tag to v2.7.27 ([#23](https://github.com/nethesis/parceler/issues/23)) ([c1bc00a](https://github.com/nethesis/parceler/commit/c1bc00a28ac7df48f8fa1e807ced532ba6d1c68c))
+* update nginx docker tag to v1.27.4 ([#18](https://github.com/nethesis/parceler/issues/18)) ([dd2aa27](https://github.com/nethesis/parceler/commit/dd2aa27be06277656d8cdd7002fc9b44edebaeaf))
+
 ## [1.0.0](https://github.com/nethesis/parceler/compare/v0.4.0...v1.0.0) (2025-02-24)
 
 
