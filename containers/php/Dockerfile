@@ -4,7 +4,7 @@ ARG ADDITIONAL_PACKAGES="bash rclone sqlite"
 FROM php:8.4.5-fpm-alpine AS base
 WORKDIR /var/www/html
 # install software needed for all environments
-COPY --from=docker.io/composer:2.8.6 /usr/bin/composer /usr/local/bin/composer
+COPY --from=docker.io/composer:2.8.7 /usr/bin/composer /usr/local/bin/composer
 COPY --from=docker.io/mlocati/php-extension-installer:2.7.29 /usr/bin/install-php-extensions /usr/local/sbin/install-php-extensions
 ADD --chmod=777 \
     --checksum=sha256:206a8f9b2177703fc5aa924d85ad6c72e82413e2d09635b4c9c82a1b65b5b3d5 \
