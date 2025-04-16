@@ -1,10 +1,11 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
-        "config:base",
+        "config:recommended",
         ":disableDependencyDashboard",
         ":prHourlyLimitNone",
         ":automergeMinor",
+        ":maintainLockFilesMonthly",
         ":assignee(@Tbaile)"
     ],
     "vulnerabilityAlerts": {
