@@ -102,4 +102,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload ${{ github.ref_name }} ${{ matrix.name }}.cdx.json
+          gh release --repo ${{ github.repository }} upload ${{ github.ref_name }} ${{ matrix.name }}.cdx.json
