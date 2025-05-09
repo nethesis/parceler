@@ -77,6 +77,8 @@ jobs:
         with:
           image-ref: ${{ matrix.image-ref }}
           format: 'github'
+          output: '${{ matrix.name }}.sbom.json'
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate Sarif Report
         uses: aquasecurity/trivy-action@0.30.0
         with:
