@@ -8,6 +8,12 @@
         ":maintainLockFilesMonthly",
         ":assignee(@Tbaile)"
     ],
+    "packageRules": [
+        {
+            "matchManagers": ["composer"],
+            "rangeStrategy": "replace"
+        }
+    ],
     "vulnerabilityAlerts": {
         "labels": [
             "security"
