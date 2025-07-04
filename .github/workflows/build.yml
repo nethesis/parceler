@@ -73,14 +73,14 @@ jobs:
             image-ref: ${{ fromJson(needs.build.outputs.nginx-tags).tags[0] }}
     steps:
       - name: Update Dependency Graph
-        uses: aquasecurity/trivy-action@0.31.0
+        uses: aquasecurity/trivy-action@0.32.0
         with:
           image-ref: ${{ matrix.image-ref }}
           format: 'github'
           output: '${{ matrix.name }}.sbom.json'
           github-pat: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate Sarif Report
-        uses: aquasecurity/trivy-action@0.31.0
+        uses: aquasecurity/trivy-action@0.32.0
         with:
           image-ref: ${{ matrix.image-ref }}
           format: sarif
@@ -92,7 +92,7 @@ jobs:
           category: ${{ matrix.name }}
       - name: Generate SBOM
         if: startsWith(github.ref, 'refs/tags/')
-        uses: aquasecurity/trivy-action@0.31.0
+        uses: aquasecurity/trivy-action@0.32.0
         with:
           image-ref: ${{ matrix.image-ref }}
           format: cyclonedx
