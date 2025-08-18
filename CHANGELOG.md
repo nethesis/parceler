@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/nethesis/parceler/compare/v1.0.1...v1.1.0) (2025-08-18)
+
+
+### Features
+
+* added nightwatch monitoring ([82dbf6c](https://github.com/nethesis/parceler/commit/82dbf6c1cd010589d1d58ffbb6226f38aced52da))
+
 ## [1.0.1](https://github.com/nethesis/parceler/compare/v1.0.0...v1.0.1) (2025-05-09)
 
 
