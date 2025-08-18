@@ -1,3 +1,18 @@
+x-app: &app
+  pull_policy: never
+  build:
+    dockerfile: containers/php/Dockerfile
+    target: development
+    args:
+      UID: ${UID:-1000}
+      GID: ${GID:-1000}
+  restart: unless-stopped
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - .:/var/www/html
+
 services:
   nginx:
     pull_policy: never
@@ -10,16 +25,33 @@ services:
       FPM_HOST: php
       FPM_PORT: 9000
   php:
-    pull_policy: never
-    build:
-      dockerfile: containers/php/Dockerfile
-      target: development
-      args:
-        UID: ${UID:-1000}
-        GID: ${GID:-1000}
-    restart: unless-stopped
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - .:/var/www/html
+    <<: *app
+    environment:
+      NIGHTWATCH_INGEST_URI: nightwatch-agent:2407
+  scheduler:
+    <<: *app
+    user: root
+    command: scheduler
+    environment:
+      PHP_HOST: php
+      PHP_PORT: 9000
+  worker:
+    <<: *app
+    user: root
+    command: worker
+    environment:
+      PHP_HOST: php
+      PHP_PORT: 9000
+  nightwatch-agent:
+    <<: *app
+    user: root
+    command: nightwatch
+    environment:
+      PHP_HOST: php
+      PHP_PORT: 9000
+    healthcheck:
+      test: php artisan nightwatch:status
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

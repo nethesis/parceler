@@ -28,6 +28,12 @@ elif [ "$1" = "worker" ]; then
         php artisan optimize
     fi
     set -- su -s /bin/sh -c "php artisan queue:work --tries=3 --timeout=1800" www-data
+elif [ "$1" = "nightwatch" ]; then
+    wait-for "${PHP_HOST:?Missing PHP_HOST}:${PHP_PORT:?Missing PHP_PORT}" -t 60
+    if [ "$APP_ENV" != "local" ]; then
+        php artisan optimize
+    fi
+    set -- su -s /bin/sh -c "php artisan nightwatch:agent --listen-on 0.0.0.0:2407" www-data
 fi
 
 exec "$@"
