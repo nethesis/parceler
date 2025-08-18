@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class LicenceVerification
 {
-    public function __construct(readonly string $enterpriseEndpoint, readonly string $communityEntrypoint) {}
+    public function __construct(public readonly string $enterpriseEndpoint, public readonly string $communityEntrypoint) {}
 
     public function communityCheck(string $systemId, string $secret): bool
     {
