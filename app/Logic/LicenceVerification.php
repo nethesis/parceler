@@ -31,7 +31,7 @@ class LicenceVerification
                 } else {
                     $validUntil = Carbon::parse($validUntil);
                     if (now()->greaterThan($validUntil)) {
-                        Log::error('Subscription is expired.');
+                        Log::warning("Subscription for $systemId is expired.");
 
                         return false;
                     }
@@ -69,7 +69,7 @@ class LicenceVerification
 
                 return false;
             } catch (RequestException $e) {
-                Log::warning('My subscription error, error code returned: '.$e->response->status());
+                Log::warning("My subscription error for $systemId, error code returned: ".$e->response->status());
 
                 return false;
             }
