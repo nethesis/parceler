@@ -23,6 +23,7 @@
         "ext-pcntl": "*",
         "ext-pcre": "*",
         "ext-pdo": "*",
+        "ext-redis": "*",
         "ext-session": "*",
         "ext-tokenizer": "*",
         "ext-xml": "*",

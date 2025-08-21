@@ -12,6 +12,8 @@ x-app: &app
   volumes:
     - /etc/localtime:/etc/localtime:ro
     - .:/var/www/html
+  env_file:
+    - .env
 
 services:
   nginx:
@@ -32,6 +34,7 @@ services:
     <<: *app
     user: root
     command: scheduler
+    stop_signal: SIGKILL
     environment:
       PHP_HOST: php
       PHP_PORT: 9000
@@ -46,6 +49,7 @@ services:
     <<: *app
     user: root
     command: nightwatch
+    stop_signal: SIGKILL
     environment:
       PHP_HOST: php
       PHP_PORT: 9000
@@ -55,3 +59,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+  redis:
+    image: redis:8.2.1-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
