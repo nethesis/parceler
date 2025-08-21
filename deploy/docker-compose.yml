@@ -17,21 +17,49 @@ services:
       FPM_HOST: php
       FPM_PORT: 9000
   worker:
-    extends:
-      service: php
+    image: ghcr.io/nethesis/parceler-php:latest
+    volumes:
+      - storage:/var/www/html/storage
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
     stop_signal: SIGKILL
     command: worker
     environment:
       PHP_HOST: php
       PHP_PORT: 9000
   scheduler:
-    extends:
-      service: php
+    image: ghcr.io/nethesis/parceler-php:latest
+    volumes:
+      - storage:/var/www/html/storage
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
     stop_signal: SIGKILL
     command: scheduler
     environment:
       PHP_HOST: php
       PHP_PORT: 9000
+  nightwatch-agent:
+    image: ghcr.io/nethesis/parceler-php:latest
+    volumes:
+      - storage:/var/www/html/storage
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    stop_signal: SIGKILL
+    command: nightwatch
+    environment:
+      PHP_HOST: php
+      PHP_PORT: 9000
+    healthcheck:
+      test: php artisan nightwatch:status
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+  redis:
+    image: redis:8.2.1-alpine
 
 volumes:
   storage: { }

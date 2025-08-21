@@ -3,7 +3,7 @@
 Repo management for Nethsecurity installations.
 
 Something went wrong with some packages? Go straight to
-the [faulty packages section](#list-of-behaviours-in-case-of-distribution-of-faulty-packages). :rocket:
+the [faulty packages section](#list-of-behaviors-when-faulty-packages-get-accidentally-distributed). :rocket:
 
 ## Application Structure
 
@@ -13,8 +13,10 @@ The application is structured as follows:
 - `php`: Main application that handles the logic and dispatches the jobs.
 - `scheduler`: Scheduler that handles cron jobs for the php application.
 - `worker`: Worker that handles the jobs dispatched by the php application.
+- `redis`: Redis instance for cache.
+- `nightwatch-agent`: Agent for nightwatch stats.
 
-The storage can be configured to use different disks, however a local shared storage is mandatory due to the `sqlite`
+The storage can be configured to use different disks, however, a local shared storage is mandatory due to the `sqlite`
 database that `php`, `scheduler` and `worker` containers share.
 
 ## Application Behavior
@@ -24,19 +26,20 @@ Base file request:
 ```mermaid
 sequenceDiagram
     client ->> nginx/php: Request file
-    database ->> nginx/php: Get repository
+    nginx/php ->>database: Get repository
+    database ->> nginx/php: 
     opt repository not found
         nginx/php ->> client: 404 Not Found
     end
-    database ->> nginx/php: Check cache
+    nginx/php ->> redis: Check cache
+    redis ->> nginx/php: 
     alt cache miss
         nginx/php ->> my: Ask for authorization
         my ->> nginx/php: 
-        alt authorized
-            nginx/php ->> database: Save cache
-        else not authorized
-            nginx/php ->> client: 403 Forbidden
-        end
+        nginx/php ->> redis: Save authorization status
+    end
+    opt not authorized
+        nginx/php ->> client: 403 Forbidden
     end
     nginx/php ->> filesystem: Check if file exists
     alt file does not exists
@@ -79,7 +82,7 @@ been done with these tools.
 
 Copy the `.env.example` file to `.env` and edit the entries as needed.
 
-Most of the environment variables are self-explanatory and there's no need to change their defaults unless explicitly
+Most of the environment variables are self-explanatory, and there's no need to change their defaults unless explicitly
 told so.
 However, there are a few that you might want to change:
 
@@ -159,7 +162,7 @@ php artisan test
 ### Build the production image
 
 GitHub Actions takes care of the deployment of the images to the registry, however if you want to build the production
-image yourself follow the instructions below.
+image yourself, follow the instructions below.
 
 ```bash
 docker buildx bake -f docker-bake.hcl production
@@ -169,19 +172,13 @@ You will find the images tagged as `ghcr.io/nethserver/parceler-*:latest`.
 
 ## Production
 
-The production environment is composed by the following services:
-
-- `nginx`: nginx frontend that handles http requests.
-- `php`: php-fpm that runs a Parceler instance.
-- `scheduler`: scheduler dispatcher for worker.
-- `worker`: worker that handles all jobs sent to queues.
-
-It's advised to use a reverse proxy to handle the SSL termination and load balancing.
+The same services used for development are used for production, it's advised to use a reverse proxy to handle the SSL
+termination and load balancing.
 
 ### Parceler Configuration
 
 The parceler service is being configured through an environment file, you can find the example in `.env.prod.example`.
-While some of the values are self-explanatory, there are a few that you need to manually set:
+While most values are self-explanatory, there are a few that you need to manually set:
 
 - `APP_KEY`: The application key, you can generate one using the development environment
   using `php artisan key:generate --show`.
@@ -190,11 +187,13 @@ While some of the values are self-explanatory, there are a few that you need to 
 - `FILESYSTEM_DISK`: Disk to use during production, works same as development, more info in the development setup.
 - `REPOSITORY_MILESTONE_TOKEN`: Token used to trigger from remote the milestone creation, you can set this to a random
   value, it's used to avoid unwanted requests.
+- `NIGHTWATCH_TOKEN`: In case you want to enable nightwatch stats, you need to set this to the token provided by
+  nightwatch.
 
 ### Container Configuration
 
 Now that parceler is out the way, there's additional configuration needed for the containers to run properly, here's
-container specific configuration:
+container-specific configuration:
 
 `nginx` needs variables to wait for the `php` container to be ready before starting, you can set the following:
 
@@ -229,16 +228,15 @@ found [in the documentation](https://rclone.org/docs/#config-file).
 ### Maintenance mode
 
 To avoid any issues with the files served by the service, if you are operating with the files, you can put the service
-in maintenance mode, this will prevent any new requests from being processed and will return a 503 status code. Be aware
-that even crons and queues will stop working, to force queues you
-can [resort to this command](https://laravel.com/docs/11.x/queues#maintenance-mode-queues).
+in maintenance mode. This will prevent any new requests from being processed and will return a 503 status code. Be aware
+that even cron jobs and queues will stop working; to force queues, you can [resort to this command](https://laravel.com/docs/11.x/queues#maintenance-mode-queues).
 To enable maintenance mode, you can use the following command:
 
 ```bash
 php artisan down
 ```
 
-To disable maintenance mode, you can use the following command:
+To disable the maintenance mode, you can use the following command:
 
 ```bash
 php artisan up
@@ -256,14 +254,14 @@ To add a repository, you need to enter to the `php` container and run the follow
 php artisan repository:create
 ```
 
-The command will guide you through the process of adding a repository, here's the fields that will be asked:
+The command will guide you through the process of adding a repository; here are the fields that will be asked:
 
-- `name`: name of the repository, will be used to identify the repository under the
+- `name`: name of the repository will be used to identify the repository under the
   path `repositories/{community|enterprise}/{repository_name}`,
 - `command`: the command the worker will run to sync the repository it can be anything available in the container.
   Save the content of the repository under the path `source/{repository_name}` in the disk you're using.
   (e.g. if you're using the local disk, save the content of the repository
-  under `storage/app/source/{repository_name}`). `rclone` binary is available in the container, to add configuration
+  under `storage/app/source/{repository_name}`). `rclone` binary is available in the container, to add a configuration
   file follow the [Additional Configuration](#additional-configuration) section.
 - `source_folder`: if repository files are stored in a subfolder, you can specify it here, otherwise leave it empty.
 - `delay`: how many days the upstream files are delayed.
@@ -378,7 +376,7 @@ Additional authentication must be provided, the token is set in the `.env` file 
 curl -X POST -H Accept:application/json -H Authorization:Bearer <token> <url>/repository/<repository_name>/milestone
 ```
 
-## List of behaviours in case of distribution of faulty packages
+## List of behaviors when faulty packages get accidentally distributed
 
 The following list is a guide on how to handle the distribution of faulty packages, to find which of the snapshots has a
 faulty package go to the [list repository files](#listing-files-in-a-repository) section.
