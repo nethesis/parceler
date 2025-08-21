@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/nethesis/parceler/compare/v1.1.0...v1.2.0) (2025-08-21)
+
+
+### Features
+
+* added redis as cache ([511e0d8](https://github.com/nethesis/parceler/commit/511e0d8970e0a1a58be1fe9b8fd8ff31bc88efe9))
+
+
+### Bug Fixes
+
+* changing logging level for expired subscription, adding guilty id ([609c988](https://github.com/nethesis/parceler/commit/609c988a374b6cda2657563f41287ba028fdef24))
+
 ## [1.1.0](https://github.com/nethesis/parceler/compare/v1.0.1...v1.1.0) (2025-08-18)
 
 
