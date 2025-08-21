@@ -18,7 +18,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - run: docker compose -f docker-compose.testing.yml run --rm testing ./vendor/bin/pint --test
+      - run: docker compose run --rm testing ./vendor/bin/pint --test
   test:
     uses: ./.github/workflows/test.yml
   build:

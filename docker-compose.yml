@@ -64,3 +64,15 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+  testing:
+    profiles:
+      - testing
+    build:
+      dockerfile: containers/php/Dockerfile
+      context: .
+      target: testing
+      cache_to:
+        - type=gha,mode=max,scope=testing
+      cache_from:
+        - type=gha,scope=testing
+

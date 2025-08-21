@@ -89,3 +89,5 @@ RUN composer check-platform-reqs \
     && composer dump-autoload --optimize \
     && php artisan key:generate --env=testing
 USER www-data
+ENV CI=true
+CMD ["./vendor/bin/pest", "--parallel"]

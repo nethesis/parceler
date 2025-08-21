@@ -22,4 +22,4 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - run: docker compose -f docker-compose.testing.yml run --rm testing php artisan test
+      - run: docker compose run --rm --build testing
