@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/nethesis/parceler/compare/v1.2.0...v1.2.1) (2025-09-07)
+
+
+### Bug Fixes
+
+* wait for redis to be up ([7edd034](https://github.com/nethesis/parceler/commit/7edd034ee856e07db561f20388112e4677534bc5))
+
 ## [1.2.0](https://github.com/nethesis/parceler/compare/v1.1.0...v1.2.0) (2025-08-21)
 
 
