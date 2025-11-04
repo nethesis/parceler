@@ -19,6 +19,10 @@ The application is structured as follows:
 The storage can be configured to use different disks, however, a local shared storage is mandatory due to the `sqlite`
 database that `php`, `scheduler` and `worker` containers share.
 
+## Renovate Configuration
+
+Renovate is configured to run and auto-merge minor release of the software in this repo. A lockfile maintenance is being made once a month. Security PRs are opened and closed by Renovate and they ignore every scheduling provided.
+
 ## Application Behavior
 
 Base file request:
