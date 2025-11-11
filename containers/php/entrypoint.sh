@@ -2,6 +2,10 @@
 
 set -e
 
+if [ -f .env ]; then
+    . .env
+fi
+
 wait_for_php_fpm() {
     wait-for "${PHP_HOST:?Missing PHP_HOST}:${PHP_PORT:?Missing PHP_PORT}" -t 60
 }
