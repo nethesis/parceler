@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\NetifyLicenceController;
 use App\Http\Controllers\RepositoryController;
 use App\Http\Middleware\CommunityLicenceCheck;
 use App\Http\Middleware\EnterpriseLicenceCheck;
@@ -29,12 +28,4 @@ Route::middleware(ForceBasicAuth::class)->group(function () {
     Route::get('/repository/enterprise/{repository:name}/{path}', RepositoryController::class)
         ->where('path', '.*')
         ->middleware(EnterpriseLicenceCheck::class);
-
-    Route::get('/netifyd/enterprise/licence', [NetifyLicenceController::class, 'enterprise'])
-        ->middleware(EnterpriseLicenceCheck::class);
-
-    Route::get('/netifyd/community/licence', [NetifyLicenceController::class, 'enterprise'])
-        ->middleware(CommunityLicenceCheck::class);
 });
-
-Route::get('/netifyd/licence', [NetifyLicenceController::class, 'community']);
