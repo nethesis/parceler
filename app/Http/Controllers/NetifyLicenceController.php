@@ -32,7 +32,7 @@ class NetifyLicenceController extends Controller
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
-        $license = array_find($licences['data'], fn ($item) => $item['issued_to'] == $licenceType->label());
+        $license = array_find($licences, fn ($item) => $item['issued_to'] == $licenceType->label());
         // If it doesn't exist, create it.
         if ($license == null) {
             Log::debug('Requested license not found, creating it.');
