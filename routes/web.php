@@ -30,7 +30,11 @@ Route::middleware(ForceBasicAuth::class)->group(function () {
         ->where('path', '.*')
         ->middleware(EnterpriseLicenceCheck::class);
 
-    Route::get('/netifyd/enterprise/licence', [NetifyLicenceController::class, 'enterprise']);
+    Route::get('/netifyd/enterprise/licence', [NetifyLicenceController::class, 'enterprise'])
+        ->middleware(EnterpriseLicenceCheck::class);
+
+    Route::get('/netifyd/community/licence', [NetifyLicenceController::class, 'enterprise'])
+        ->middleware(CommunityLicenceCheck::class);
 });
 
-Route::get('/netifyd/community/licence', [NetifyLicenceController::class, 'community']);
+Route::get('/netifyd/licence', [NetifyLicenceController::class, 'community']);
