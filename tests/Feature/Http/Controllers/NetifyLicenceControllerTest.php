@@ -17,14 +17,14 @@ describe('middleware checking', function () {
             ->assertUnauthorized()
             ->assertHeader('WWW-Authenticate', 'Basic');
     })->with([
-        '/netifyd/enterprise/licence',
-        '/netifyd/community/licence',
+        '/api/netifyd/enterprise/licence',
+        '/api/netifyd/community/licence',
     ]);
 
     it('can access free licence without credentials', function () {
         Cache::expects('has')->with(NetifydLicenceType::COMMUNITY->cacheLabel())->andReturnTrue();
         Cache::expects('get')->with(NetifydLicenceType::COMMUNITY->cacheLabel())->andReturn(['license_key' => 'cache']);
-        get('/netifyd/licence')
+        get('/api/netifyd/licence')
             ->assertOk()
             ->assertJson(['license_key' => 'cache']);
     });
@@ -44,7 +44,7 @@ describe('controller testing', function () {
         Cache::expects('has')->with(NetifydLicenceType::ENTERPRISE->cacheLabel())->andReturnTrue();
         Cache::expects('get')->with(NetifydLicenceType::ENTERPRISE->cacheLabel())->andReturn(['license_key' => 'cache']);
         withBasicAuth('', '')
-            ->get('/netifyd/community/licence')
+            ->get('/api/netifyd/community/licence')
             ->assertOk()
             ->assertJson(['license_key' => 'cache']);
     });
@@ -55,7 +55,7 @@ describe('controller testing', function () {
         Http::preventStrayRequests();
         Http::fake();
         withBasicAuth('system-id', 'secret')
-            ->get('/netifyd/community/licence')
+            ->get('/api/netifyd/community/licence')
             ->assertOk()
             ->assertJson([
                 'license_key' => 'cached-license-key',
@@ -68,7 +68,7 @@ describe('controller testing', function () {
                 ->andThrow(new Exception('Netifyd server error'));
         });
         withBasicAuth('system-id', 'secret')
-            ->get('/netifyd/community/licence')
+            ->get('/api/netifyd/community/licence')
             ->assertInternalServerError()
             ->assertJson([
                 'message' => 'Netifyd server error',
@@ -95,7 +95,7 @@ describe('controller testing', function () {
         Cache::expects('has')->with(NetifydLicenceType::ENTERPRISE->cacheLabel())->andReturnFalse();
         Cache::expects('put')->with(NetifydLicenceType::ENTERPRISE->cacheLabel(), $licence, ($expiration->unix() - $creation->unix()) / 2);
         withBasicAuth('system-id', 'secret')
-            ->get('/netifyd/community/licence')
+            ->get('/api/netifyd/community/licence')
             ->assertOk()
             ->json($licence);
     });
@@ -108,7 +108,7 @@ describe('controller testing', function () {
                 ->with(NetifydLicenceType::ENTERPRISE)
                 ->andreturn([]);
         });
-        withBasicAuth('system-id', 'secret')->get('/netifyd/community/licence');
+        withBasicAuth('system-id', 'secret')->get('/api/netifyd/community/licence');
     });
 
     it('cannot create new licence', function () {
@@ -120,7 +120,7 @@ describe('controller testing', function () {
                 ->andThrow(new Exception('Cannot create licence'));
         });
         withBasicAuth('', '')
-            ->get('/netifyd/community/licence')
+            ->get('/api/netifyd/community/licence')
             ->assertInternalServerError()
             ->assertJson(['message' => 'Cannot create licence']);
     });
@@ -146,7 +146,7 @@ describe('controller testing', function () {
                 ->andReturn($licence);
         });
         withBasicAuth('', '')
-            ->get('/netifyd/community/licence')
+            ->get('/api/netifyd/community/licence')
             ->assertOk();
     });
 
@@ -171,7 +171,7 @@ describe('controller testing', function () {
                 ->andThrow(new Exception('Cannot renew licence'));
         });
         withBasicAuth('', '')
-            ->get('/netifyd/community/licence')
+            ->get('/api/netifyd/community/licence')
             ->assertInternalServerError()
             ->assertJson(['message' => 'Cannot renew licence']);
     });
