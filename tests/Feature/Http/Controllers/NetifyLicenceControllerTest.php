@@ -186,7 +186,4 @@ describe('controller testing', function () {
             ->assertJson(['message' => 'Cannot renew licence']);
     });
 
-})->with([
-    ['enterpriseCheck', '/netifyd/enterprise/licence'],
-    ['communityCheck', '/netifyd/community/licence'],
-]);
+});
