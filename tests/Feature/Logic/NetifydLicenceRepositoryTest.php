@@ -33,7 +33,7 @@ it('handles failing to create a licence', function (NetifydLicenceType $licenceT
         '*' => Http::response(json_encode(['error' => 'error']), 500),
     ]);
     $repository->createLicence($licenceType);
-})->throws('Could not create licence from netifyd:')
+})->throws('Could not create licence on netifyd:')
     ->with(NetifydLicenceType::cases());
 
 it('handles failing to renew licence', function (NetifydLicenceType $licenceType) {
@@ -42,7 +42,5 @@ it('handles failing to renew licence', function (NetifydLicenceType $licenceType
         '*' => Http::response(json_encode(['error' => 'error']), 500),
     ]);
     $repository->renewLicence($licenceType, 'dummy');
-})->throws('Could not renew licence from netifyd:')
+})->throws('Could not renew licence on netifyd:')
     ->with(NetifydLicenceType::cases());
-
-
