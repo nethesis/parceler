@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
             return new LicenceVerification(config('repositories.endpoints.enterprise'), config('repositories.endpoints.community'));
         });
         $this->app->singleton(NetifydLicenceRepository::class, function () {
-            return new NetifydLicenceRepository(config('netifyd.api-key'), config('netifyd.endpoint'));
+            return new NetifydLicenceRepository(config('netifyd.endpoint'), config('netifyd.api-key'));
         });
     }
 

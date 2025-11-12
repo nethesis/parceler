@@ -90,9 +90,7 @@ describe('controller testing', function () {
         ];
         partialMock(NetifydLicenceRepository::class, function (MockInterface $mock) use ($licence) {
             $mock->expects('listLicences')
-                ->andReturn([
-                    'data' => [$licence],
-                ]);
+                ->andReturn([$licence]);
         });
         Cache::expects('has')->with(NetifydLicenceType::ENTERPRISE->cacheLabel())->andReturnFalse();
         Cache::expects('put')->with(NetifydLicenceType::ENTERPRISE->cacheLabel(), $licence, ($expiration->unix() - $creation->unix()) / 2);
@@ -105,9 +103,7 @@ describe('controller testing', function () {
     it('licence not found', function () {
         partialMock(NetifydLicenceRepository::class, function (MockInterface $mock) {
             $mock->expects('listLicences')
-                ->andReturn([
-                    'data' => [],
-                ]);
+                ->andReturn([]);
             $mock->expects('createLicence')
                 ->with(NetifydLicenceType::ENTERPRISE)
                 ->andreturn([]);
@@ -118,9 +114,7 @@ describe('controller testing', function () {
     it('cannot create new licence', function () {
         partialMock(NetifydLicenceRepository::class, function (MockInterface $mock) {
             $mock->expects('listLicences')
-                ->andReturn([
-                    'data' => [],
-                ]);
+                ->andReturn([]);
             $mock->expects('createLicence')
                 ->with(NetifydLicenceType::ENTERPRISE)
                 ->andThrow(new Exception('Cannot create licence'));
@@ -145,9 +139,7 @@ describe('controller testing', function () {
         partialMock(NetifydLicenceRepository::class, function (MockInterface $mock) use ($licence) {
             $mock->expects('listLicences')
                 ->andReturn([
-                    'data' => [
-                        $licence,
-                    ],
+                    $licence,
                 ]);
             $mock->expects('renewLicence')
                 ->with(NetifydLicenceType::ENTERPRISE, 'EXAMPLE-ENTERPRISE-SERIAL')
@@ -172,9 +164,7 @@ describe('controller testing', function () {
         partialMock(NetifydLicenceRepository::class, function (MockInterface $mock) use ($licence) {
             $mock->expects('listLicences')
                 ->andReturn([
-                    'data' => [
-                        $licence,
-                    ],
+                    $licence,
                 ]);
             $mock->expects('renewLicence')
                 ->with(NetifydLicenceType::ENTERPRISE, 'EXAMPLE-ENTERPRISE-SERIAL')
