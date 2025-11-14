@@ -15,6 +15,8 @@ storage/app/*
 !storage/app/.gitignore
 storage/app/public/*
 !storage/app/public/.gitignore
+## clockwork
+storage/clockwork/*
 ## framework
 storage/framework/compiled.php
 storage/framework/config.php
