@@ -20,12 +20,12 @@ class NetifyLicenceController extends Controller
     {
         // If license is in cache, return it.
         if (Cache::has($licenceType->cacheLabel())) {
-            Log::debug('Cache hit, serving license.');
+            Log::debug('Requested netifyd licence found in cache, returning it.');
 
             return response()->json(Cache::get($licenceType->cacheLabel()));
         }
 
-        Log::debug('Cache miss, listing licenses.');
+        Log::debug('Requested netifyd licence not found in cache, checking remote server.');
         // Check if the community license is on the remote server.
         try {
             $licences = $licenceProvider->listLicences();
@@ -35,7 +35,7 @@ class NetifyLicenceController extends Controller
         $license = array_find($licences, fn ($item) => $item['issued_to'] == $licenceType->label());
         // If it doesn't exist, create it.
         if ($license == null) {
-            Log::debug('Requested license not found, creating it.');
+            Log::debug('Netifyd licence not found on remote server, creating it.');
             try {
                 $license = $licenceProvider->createLicence($licenceType);
             } catch (Exception $e) {
@@ -43,13 +43,13 @@ class NetifyLicenceController extends Controller
             }
         }
         // Got license, checking if everything is in place.
-        Log::debug('License found, checking renewal/expiration.');
+        Log::debug('Netifyd licence recovered from remote server, checking if it can be renewed.');
         $expiration = $license['expire_at']['unix'];
         $creation = $license['created_at']['unix'];
         $renewalThreshold = ($expiration - $creation) / 2 + $creation;
         $now = now()->unix();
         if ($renewalThreshold < $now) {
-            Log::debug('Licence can be renewed, renewing.');
+            Log::debug('Netifyd licence can be renewed, renewing it.');
             try {
                 $license = $licenceProvider->renewLicence($licenceType, $license['serial']);
             } catch (Exception $e) {
