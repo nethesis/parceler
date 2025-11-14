@@ -1,16 +1,16 @@
 <?php
 
-use App\Logic\NetifydLicenceRepository;
-use App\NetifydLicenceType;
+use App\Logic\NetifydLicenseRepository;
+use App\NetifydLicenseType;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 
-it('list licences', function () {
-    $repository = new NetifydLicenceRepository('http://127.0.0.1', 'api-key');
+it('list license', function () {
+    $repository = new NetifydLicenseRepository('http://127.0.0.1', 'api-key');
     Http::fake([
         '*' => Http::response(json_encode(['data' => ['hello']])),
     ]);
-    expect($repository->listLicences())
+    expect($repository->listLicenses())
         ->toBe(['hello']);
     Http::assertSent(function (Request $request) {
         return $request->hasHeader('x-api-key')
@@ -19,28 +19,28 @@ it('list licences', function () {
     });
 });
 
-it('handles listing licences server errors', function () {
-    $repository = new NetifydLicenceRepository('http://127.0.0.1', 'api-key');
+it('handles listing license server errors', function () {
+    $repository = new NetifydLicenseRepository('http://127.0.0.1', 'api-key');
     Http::fake([
         '*' => Http::response(json_encode(['error' => 'error']), 500),
     ]);
-    $repository->listLicences();
-})->throws('Could not list licences from netifyd:');
+    $repository->listLicenses();
+})->throws('Could not list licenses from netifyd:');
 
-it('handles failing to create a licence', function (NetifydLicenceType $licenceType) {
-    $repository = new NetifydLicenceRepository('http://127.0.0.1', 'api-key');
+it('handles failing to create a license', function (NetifydLicenseType $licenseType) {
+    $repository = new NetifydLicenseRepository('http://127.0.0.1', 'api-key');
     Http::fake([
         '*' => Http::response(json_encode(['error' => 'error']), 500),
     ]);
-    $repository->createLicence($licenceType);
-})->throws('Could not create licence on netifyd:')
-    ->with(NetifydLicenceType::cases());
+    $repository->createLicense($licenseType);
+})->throws('Could not create license on netifyd:')
+    ->with(NetifydLicenseType::cases());
 
-it('handles failing to renew licence', function (NetifydLicenceType $licenceType) {
-    $repository = new NetifydLicenceRepository('http://127.0.0.1', 'api-key');
+it('handles failing to renew license', function (NetifydLicenseType $licenseType) {
+    $repository = new NetifydLicenseRepository('http://127.0.0.1', 'api-key');
     Http::fake([
         '*' => Http::response(json_encode(['error' => 'error']), 500),
     ]);
-    $repository->renewLicence($licenceType, 'dummy');
-})->throws('Could not renew licence on netifyd:')
-    ->with(NetifydLicenceType::cases());
+    $repository->renewLicense($licenseType, 'dummy');
+})->throws('Could not renew license on netifyd:')
+    ->with(NetifydLicenseType::cases());
