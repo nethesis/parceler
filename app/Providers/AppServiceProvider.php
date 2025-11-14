@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Logic\LicenceVerification;
-use App\Logic\NetifydLicenceRepository;
+use App\Logic\NetifydLicenseRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,8 +16,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(LicenceVerification::class, function () {
             return new LicenceVerification(config('repositories.endpoints.enterprise'), config('repositories.endpoints.community'));
         });
-        $this->app->singleton(NetifydLicenceRepository::class, function () {
-            return new NetifydLicenceRepository(config('netifyd.endpoint'), config('netifyd.api-key'));
+        $this->app->singleton(NetifydLicenseRepository::class, function () {
+            return new NetifydLicenseRepository(config('netifyd.endpoint'), config('netifyd.api-key'));
         });
     }
 

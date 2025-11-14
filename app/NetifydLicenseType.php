@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Support\Str;
 
-enum NetifydLicenceType: string
+enum NetifydLicenseType: string
 {
     case COMMUNITY = 'community';
     case ENTERPRISE = 'enterprise';
