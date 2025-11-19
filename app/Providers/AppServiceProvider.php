@@ -4,7 +4,10 @@ namespace App\Providers;
 
 use App\Logic\LicenceVerification;
 use App\Logic\NetifydLicenseRepository;
+use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Nightwatch\Facades\Nightwatch;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Event::listen(function (DiagnosingHealth $event) {
+            Nightwatch::dontSample();
+        });
     }
 }
