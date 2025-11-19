@@ -38,7 +38,7 @@ class NetifydLicenseRepository
                     'format' => 'object',
                     'issued_to' => $licenseType->label(),
                     'duration_days' => $licenseType->durationDays(),
-                    'description' => 'License provided to'.$licenseType->label().'instances.',
+                    'description' => 'License provided to '.$licenseType->label().' instances.',
                     'entitlements' => [
                         'netify-proc-aggregator',
                         'netify-proc-flow-actions',
