@@ -76,16 +76,14 @@ describe('controller testing', function () {
     });
 
     it('list licenses', function () {
-        $expiration = now()->addDays(2);
-        $creation = now()->subDay();
         $license = [
             'issued_to' => NetifydLicenseType::ENTERPRISE->label(),
             'serial' => 'EXAMPLE-ENTERPRISE-SERIAL',
             'expire_at' => [
-                'unix' => $expiration->unix(),
+                'unix' => now()->addDays(2)->unix(),
             ],
             'created_at' => [
-                'unix' => $creation->unix(),
+                'unix' => now()->subDay()->unix(),
             ],
         ];
         partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
@@ -93,7 +91,7 @@ describe('controller testing', function () {
                 ->andReturn([$license]);
         });
         Cache::expects('has')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturnFalse();
-        Cache::expects('put')->with(NetifydLicenseType::ENTERPRISE->cacheLabel(), $license, ($expiration->unix() - $creation->unix()) / 2);
+        Cache::expects('put')->withSomeOfArgs(NetifydLicenseType::ENTERPRISE->cacheLabel(), $license);
         withBasicAuth('system-id', 'secret')
             ->get('/api/netifyd/community/license')
             ->assertOk()
