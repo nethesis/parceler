@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Logic\NetifydLicenseRepository;
 use App\NetifydLicenseType;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -44,11 +45,12 @@ class NetifyLicenseController extends Controller
         }
         // Got license, checking if everything is in place.
         Log::debug('Netifyd license recovered from remote server, checking if it can be renewed.');
-        $expiration = $license['expire_at']['unix'];
-        $creation = $license['created_at']['unix'];
-        $renewalThreshold = ($expiration - $creation) / 2 + $creation;
-        $now = now()->unix();
-        if ($renewalThreshold < $now) {
+        $expiration = Carbon::createFromTimestampUTC($license['expire_at']['unix'])->startOfDay()->toImmutable();
+        $creation = Carbon::createFromTimestampUTC($license['created_at']['unix'])->startOfDay()->toImmutable();
+        $diff = $creation->diff($expiration)->cascade()->totalDays;
+        $renewalThreshold = $creation->addDays(ceil($diff / 2));
+        $now = now()->utc()->startOfDay();
+        if ($renewalThreshold <= $now) {
             Log::debug('Netifyd license can be renewed, renewing it.');
             try {
                 $license = $licenseProvider->renewLicense($licenseType, $license['serial']);
@@ -56,10 +58,7 @@ class NetifyLicenseController extends Controller
                 return response()->json(['message' => $e->getMessage()], 500);
             }
         }
-
-        $expiration = $license['expire_at']['unix'];
-        $creation = $license['created_at']['unix'];
-        Cache::put($licenseType->cacheLabel(), $license, ($expiration - $creation) / 2);
+        Cache::put($licenseType->cacheLabel(), $license, now()->addHour());
 
         return response()->json($license);
     }
