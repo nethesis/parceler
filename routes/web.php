@@ -21,7 +21,7 @@ Route::middleware(MilestoneAuth::class)
         return response()->json(['message' => 'Milestone release job dispatched.']);
     });
 
-Route::middleware([ForceBasicAuth::class, Sample::never()])->group(function () {
+Route::middleware([ForceBasicAuth::class, Sample::rate(0)])->group(function () {
     Route::get('/repository/community/{repository:name}/{path}', RepositoryController::class)
         ->where('path', '.*')
         ->middleware(CommunityLicenceCheck::class);
