@@ -24,9 +24,6 @@ enum NetifydLicenseType: string
 
     public function durationDays(): int
     {
-        return match ($this) {
-            self::COMMUNITY => 3,
-            self::ENTERPRISE => 7,
-        };
+        return 7;
     }
 }
