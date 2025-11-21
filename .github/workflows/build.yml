@@ -22,7 +22,7 @@ jobs:
       php-tags: ${{ steps.meta-php.outputs.json }}
       nginx-tags: ${{ steps.meta-nginx.outputs.json }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: docker/setup-buildx-action@v3
       - uses: docker/metadata-action@v5
         id: meta-php
