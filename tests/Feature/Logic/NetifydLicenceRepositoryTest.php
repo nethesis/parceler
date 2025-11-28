@@ -41,6 +41,6 @@ it('handles failing to renew license', function (NetifydLicenseType $licenseType
     Http::fake([
         '*' => Http::response(json_encode(['error' => 'error']), 500),
     ]);
-    $repository->renewLicense($licenseType, 'dummy');
+    $repository->renewLicense($licenseType, 'example serial', now());
 })->throws('Could not renew license on netifyd:')
     ->with(NetifydLicenseType::cases());

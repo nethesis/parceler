@@ -58,7 +58,7 @@ class NetifydLicenseRepository
         try {
             return Http::withHeader('x-api-key', config('netifyd.api-key'))
                 ->post(config('netifyd.endpoint').'/api/v2/integrator/licenses/'.$serial.'/renew', [
-                    'duration_days' => $licenseType->durationDays(),
+                    'expire_at' => now()->utc()->startOfDay()->addDays($licenseType->durationDays())->subDay()->toDateString(),
                 ])->throw()
                 ->json('data');
 

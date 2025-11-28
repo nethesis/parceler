@@ -22,11 +22,16 @@ describe('middleware checking', function () {
     ]);
 
     it('can access free license without credentials', function () {
-        Cache::expects('has')->with(NetifydLicenseType::COMMUNITY->cacheLabel())->andReturnTrue();
-        Cache::expects('get')->with(NetifydLicenseType::COMMUNITY->cacheLabel())->andReturn(['license_key' => 'cache']);
+        $fakeLicense = [
+            'issued_to' => NetifydLicenseType::COMMUNITY->label(),
+            'expire_at' => [
+                'unix' => now()->addDays(2)->unix(),
+            ],
+        ];
+        Cache::expects('get')->with(NetifydLicenseType::COMMUNITY->cacheLabel())->andReturn($fakeLicense);
         get('/api/netifyd/license')
             ->assertOk()
-            ->assertJson(['license_key' => 'cache']);
+            ->assertJson($fakeLicense);
     });
 });
 
@@ -41,25 +46,60 @@ describe('controller testing', function () {
     });
 
     it('can access enterprise license with credentials', function () {
-        Cache::expects('has')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturnTrue();
-        Cache::expects('get')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturn(['license_key' => 'cache']);
+        $fakeLicense = [
+            'issued_to' => NetifydLicenseType::ENTERPRISE->label(),
+            'expire_at' => [
+                'unix' => now()->addDays(2)->unix(),
+            ],
+        ];
+        Cache::expects('get')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturn($fakeLicense);
         withBasicAuth('', '')
             ->get('/api/netifyd/community/license')
             ->assertOk()
-            ->assertJson(['license_key' => 'cache']);
+            ->assertJson($fakeLicense);
     });
 
-    it('serves correctly cache if present', function () {
-        Cache::expects('has')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturnTrue();
-        Cache::expects('get')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturn(['license_key' => 'cached-license-key']);
+    it('serves correctly cache if present and not expired', function () {
+        $fakeLicense = [
+            'issued_to' => NetifydLicenseType::ENTERPRISE->label(),
+            'expire_at' => [
+                'unix' => now()->addDays(2)->unix(),
+            ],
+        ];
+        Cache::expects('get')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturn($fakeLicense);
         Http::preventStrayRequests();
         Http::fake();
         withBasicAuth('system-id', 'secret')
             ->get('/api/netifyd/community/license')
             ->assertOk()
-            ->assertJson([
-                'license_key' => 'cached-license-key',
-            ]);
+            ->assertJson($fakeLicense);
+    });
+
+    it('throws away the cache if license is expired', function () {
+        $fakeLicense = [
+            'issued_to' => NetifydLicenseType::ENTERPRISE->label(),
+            'expire_at' => [
+                'unix' => now()->subDay()->unix(),
+            ],
+        ];
+        Cache::expects('get')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturn($fakeLicense);
+        Cache::expects('forget')->with(NetifydLicenseType::ENTERPRISE->cacheLabel());
+        $license = [
+            'issued_to' => NetifydLicenseType::ENTERPRISE->label(),
+            'serial' => 'EXAMPLE-ENTERPRISE-SERIAL',
+            'expire_at' => [
+                'unix' => now()->addDays(2)->unix(),
+            ],
+        ];
+        Cache::expects('put')->withSomeOfArgs(NetifydLicenseType::ENTERPRISE->cacheLabel(), $license);
+        partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
+            $mock->expects('listLicenses')
+                ->andReturn([$license]);
+        });
+        withBasicAuth('system-id', 'secret')
+            ->get('/api/netifyd/community/license')
+            ->assertOk()
+            ->json($license);
     });
 
     it('handles errors from netifyd server', function () {
@@ -82,15 +122,12 @@ describe('controller testing', function () {
             'expire_at' => [
                 'unix' => now()->addDays(2)->unix(),
             ],
-            'created_at' => [
-                'unix' => now()->subDay()->unix(),
-            ],
         ];
         partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
             $mock->expects('listLicenses')
                 ->andReturn([$license]);
         });
-        Cache::expects('has')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturnFalse();
+        Cache::expects('get')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturnNull();
         Cache::expects('put')->withSomeOfArgs(NetifydLicenseType::ENTERPRISE->cacheLabel(), $license);
         withBasicAuth('system-id', 'secret')
             ->get('/api/netifyd/community/license')
@@ -130,9 +167,6 @@ describe('controller testing', function () {
             'expire_at' => [
                 'unix' => now()->addDay()->unix(),
             ],
-            'created_at' => [
-                'unix' => now()->subDays(3)->unix(),
-            ],
         ];
         partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
             $mock->expects('listLicenses')
@@ -148,15 +182,12 @@ describe('controller testing', function () {
             ->assertOk();
     });
 
-    it('cannot renew license', function () {
+    it('cannot renew license, but it\'s not expired', function () {
         $license = [
             'issued_to' => NetifydLicenseType::ENTERPRISE->label(),
             'serial' => 'EXAMPLE-ENTERPRISE-SERIAL',
             'expire_at' => [
                 'unix' => now()->addDay()->unix(),
-            ],
-            'created_at' => [
-                'unix' => now()->subDays(3)->unix(),
             ],
         ];
         partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
@@ -170,8 +201,30 @@ describe('controller testing', function () {
         });
         withBasicAuth('', '')
             ->get('/api/netifyd/community/license')
-            ->assertInternalServerError()
-            ->assertJson(['message' => 'Cannot renew license']);
+            ->assertOk()
+            ->assertJson($license);
+    });
+
+    it('cannot renew license, but it\'s expired', function () {
+        $license = [
+            'issued_to' => NetifydLicenseType::ENTERPRISE->label(),
+            'serial' => 'EXAMPLE-ENTERPRISE-SERIAL',
+            'expire_at' => [
+                'unix' => now()->subDay()->unix(),
+            ],
+        ];
+        partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
+            $mock->expects('listLicenses')
+                ->andReturn([
+                    $license,
+                ]);
+            $mock->expects('renewLicense')
+                ->with(NetifydLicenseType::ENTERPRISE, 'EXAMPLE-ENTERPRISE-SERIAL')
+                ->andThrow(new Exception('Cannot renew license'));
+        });
+        withBasicAuth('', '')
+            ->get('/api/netifyd/community/license')
+            ->assertInternalServerError();
     });
 
 });

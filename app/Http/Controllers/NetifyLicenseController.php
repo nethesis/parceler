@@ -20,13 +20,19 @@ class NetifyLicenseController extends Controller
     private function run(NetifydLicenseRepository $licenseProvider, NetifydLicenseType $licenseType): JsonResponse
     {
         // If license is in cache, return it.
-        if (Cache::has($licenseType->cacheLabel())) {
-            Log::debug('Requested netifyd license found in cache, returning it.');
-
-            return response()->json(Cache::get($licenseType->cacheLabel()));
+        $license = Cache::get($licenseType->cacheLabel());
+        if ($license != null) {
+            Log::debug('Requested netifyd license found in cache.');
+            $expiration = Carbon::createFromTimestampUTC($license['expire_at']['unix'])->startOfDay()->toImmutable();
+            // License is still valid, return it.
+            if ($expiration > now()->utc()->startOfDay()) {
+                return response()->json($license);
+            }
+            Log::warning('Found license expired in cache, pruning.');
+            Cache::forget($licenseType->cacheLabel());
         }
 
-        Log::debug('Requested netifyd license not found in cache, checking remote server.');
+        Log::debug('Checking remote server for license.');
         // Check if the community license is on the remote server.
         try {
             $licenses = $licenseProvider->listLicenses();
@@ -46,16 +52,18 @@ class NetifyLicenseController extends Controller
         // Got license, checking if everything is in place.
         Log::debug('Netifyd license recovered from remote server, checking if it can be renewed.');
         $expiration = Carbon::createFromTimestampUTC($license['expire_at']['unix'])->startOfDay()->toImmutable();
-        $creation = Carbon::createFromTimestampUTC($license['created_at']['unix'])->startOfDay()->toImmutable();
-        $diff = $creation->diff($expiration)->cascade()->totalDays;
-        $renewalThreshold = $creation->addDays(ceil($diff / 2));
+        $renewalThreshold = $expiration->subDays(floor($licenseType->durationDays() / 2));
         $now = now()->utc()->startOfDay();
         if ($renewalThreshold <= $now) {
             Log::debug('Netifyd license can be renewed, renewing it.');
             try {
                 $license = $licenseProvider->renewLicense($licenseType, $license['serial']);
             } catch (Exception $e) {
-                return response()->json(['message' => $e->getMessage()], 500);
+                if ($expiration <= $now) {
+                    return response()->json(['message' => 'License has expired and could not be renewed: '.$e->getPrevious()?->getMessage()], 500);
+                } else {
+                    Log::warning('License could not be renewed, but is still valid: '.$e->getPrevious()?->getMessage());
+                }
             }
         }
         Cache::put($licenseType->cacheLabel(), $license, now()->addHour());
