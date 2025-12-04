@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.1](https://github.com/nethesis/parceler/compare/v1.2.0...v1.2.1) (2025-12-04)
+
+
+### Bug Fixes
+
+* added wait for cache service even for other services ([d8092f7](https://github.com/nethesis/parceler/commit/d8092f7d3b24f0e23c908d0006e18ad12afc1e06))
+* missing html directory in nginx ([cfbc2e2](https://github.com/nethesis/parceler/commit/cfbc2e2da7558f76319b8a762863990216bd3a7e))
+* wait for redis to be up ([7edd034](https://github.com/nethesis/parceler/commit/7edd034ee856e07db561f20388112e4677534bc5))
+
 ## [1.2.0](https://github.com/nethesis/parceler/compare/v1.1.0...v1.2.0) (2025-08-21)
 
 
