@@ -8,6 +8,7 @@ use App\Http\Middleware\MilestoneAuth;
 use App\Jobs\MilestoneRelease;
 use App\Models\Repository;
 use Illuminate\Support\Facades\Route;
+use Laravel\Nightwatch\Http\Middleware\Sample;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,7 +21,7 @@ Route::middleware(MilestoneAuth::class)
         return response()->json(['message' => 'Milestone release job dispatched.']);
     });
 
-Route::middleware(ForceBasicAuth::class)->group(function () {
+Route::middleware([ForceBasicAuth::class, Sample::rate(0)])->group(function () {
     Route::get('/repository/community/{repository:name}/{path}', RepositoryController::class)
         ->where('path', '.*')
         ->middleware(CommunityLicenceCheck::class);

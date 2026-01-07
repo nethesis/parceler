@@ -20,10 +20,8 @@ class EnterpriseLicenceCheck
     {
         $systemId = $request->headers->get('php-auth-user');
         $secret = $request->headers->get('php-auth-pw');
+        abort_unless($this->licenceVerification->enterpriseCheck($systemId, $secret), 401, 'Unauthorized.');
 
-        if ($this->licenceVerification->enterpriseCheck($systemId, $secret)) {
-            return $next($request);
-        }
-        abort(401);
+        return $next($request);
     }
 }
