@@ -100,7 +100,7 @@ describe('community licence verification', function () {
         Cache::shouldHaveReceived('has')
             ->with($this->systemId)
             ->once();
-        Cache::shouldHaveNotReceived('put');
+        Cache::shouldNotHaveReceived('put');
     });
 
     it('can handle upstream server exceptions', function () {
@@ -129,6 +129,6 @@ describe('community licence verification', function () {
         Cache::shouldHaveReceived('has')
             ->with($this->systemId)
             ->once();
-        Cache::shouldHaveNotReceived('put');
+        Cache::shouldNotHaveReceived('put');
     });
 });
