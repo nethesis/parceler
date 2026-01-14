@@ -22,7 +22,7 @@ return [
     'snapshots' => env('REPOSITORY_BASE_FOLDER', 'snapshots'),
 
     /*
-     * Milestone release authentication token
+     * Fresh release authentication token
      */
-    'milestone_token' => env('REPOSITORY_MILESTONE_TOKEN'),
+    'release_token' => env('REPOSITORY_RELEASE_TOKEN'),
 ];

@@ -189,7 +189,7 @@ While most values are self-explanatory, there are a few that you need to manuall
 - `APP_URL`: The full URL where the application is reached from, while most of the functionalities will work with a
   wrong value, the url generation is based off this value.
 - `FILESYSTEM_DISK`: Disk to use during production, works same as development, more info in the development setup.
-- `REPOSITORY_MILESTONE_TOKEN`: Token used to trigger from remote the milestone creation, you can set this to a random
+- `REPOSITORY_RELEASE_TOKEN`: Token used to trigger from remote a clean release, you can set this to a random
   value, it's used to avoid unwanted requests.
 - `NIGHTWATCH_TOKEN`: In case you want to enable nightwatch stats, you need to set this to the token provided by
   nightwatch.
@@ -358,26 +358,25 @@ be provided the folder that are snapshotted and which one is currently being ser
 php artisan repository:snapshots {repository_name}
 ```
 
-### Milestone release
+### Fresh release
 
-A Milestone Release is a process that wipes all the snapshots of a repository and then creates one with the latest sync.
+A Fresh Release is a process that wipes all the snapshots of a repository and then creates one with the latest sync.
 This is useful when you want to release a new version of a repository, or when you want to force the release of a
 specific set of packages.
 
-To trigger a milestone release, this can be done by both of the following:
-
+To trigger a fresh release, this can be done by both of the following:
 - CLI
 
 ```bash
-php artisan repository:milestone {repository_name}
+php artisan repository:release {repository_name}
 ```
 
 - CURL
 
-Additional authentication must be provided, the token is set in the `.env` file under the `REPOSITORY_MILESTONE_TOKEN`.
+Additional authentication must be provided, the token is set in the `.env` file under the `REPOSITORY_RELEASE_TOKEN`.
 
 ```bash
-curl -X POST -H Accept:application/json -H Authorization:Bearer <token> <url>/repository/<repository_name>/milestone
+curl -X POST -H Accept:application/json -H Authorization:Bearer <token> <url>/repository/<repository_name>/release
 ```
 
 ## List of behaviors when faulty packages get accidentally distributed

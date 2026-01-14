@@ -1,27 +1,28 @@
 <?php
 
-use App\Jobs\MilestoneRelease;
+use App\Jobs\Release;
 use App\Models\Repository;
+use Illuminate\Support\Facades\Queue;
 
 use function Pest\Laravel\artisan;
 
-it('cannot release milestone without a name', function () {
-    artisan('repository:milestone')
+it('cannot release without a name', function () {
+    artisan('repository:release')
         ->assertFailed();
 })->throws(RuntimeException::class);
 
-it('cannot release milestone for a non-existing repository', function () {
-    artisan('repository:milestone', ['repository' => 'non-existing-repo'])
+it('cannot release for a non-existing repository', function () {
+    artisan('repository:release', ['repository' => 'non-existing-repo'])
         ->assertFailed();
 });
 
-it('ensure MilestoneRelease job is dispatched', function () {
+it('ensure Release job is dispatched', function () {
     $repo = Repository::factory()->create();
     Queue::fake();
-    artisan('repository:milestone', ['repository' => $repo->name])
-        ->expectsOutput("Milestone release for $repo->name dispatched.")
+    artisan('repository:release', ['repository' => $repo->name])
+        ->expectsOutput("Release for $repo->name dispatched.")
         ->assertExitCode(0);
-    Queue::assertPushed(function (MilestoneRelease $job) use ($repo): bool {
+    Queue::assertPushed(function (Release $job) use ($repo): bool {
         return $job->repository->is($repo);
     });
 });

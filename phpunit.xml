@@ -30,7 +30,7 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
-        <env name="REPOSITORY_MILESTONE_TOKEN" value="testing" />
+        <env name="REPOSITORY_RELEASE_TOKEN" value="testing" />
         <env name="NETIFYD_API_KEY" value="key" />
     </php>
 </phpunit>
