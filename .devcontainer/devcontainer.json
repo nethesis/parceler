@@ -1,0 +1,22 @@
+{
+	"name": "Controller DEV",
+	"dockerComposeFile": [
+		"../docker-compose.yml"
+	],
+	"service": "php",
+	"workspaceFolder": "/var/www/html",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Vue.volar",
+				"docker.docker",
+				"laravel.vscode-laravel",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"bradlc.vscode-tailwindcss",
+				"xdebug.php-debug",
+				"bmewburn.vscode-intelephense-client"
+			]
+		}
+	}
+}

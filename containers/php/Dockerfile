@@ -29,7 +29,7 @@ RUN apk add --no-cache \
     && echo "ALL ALL=(ALL:ALL) NOPASSWD: ALL" > "/etc/sudoers.d/password_less_sudo"
 ARG UID
 ARG GID
-RUN usermod -u "$UID" www-data \
+RUN usermod -u "$UID" -s /bin/bash www-data \
     && groupmod -g "$GID" www-data
 ENV XDEBUG_MODE=develop,debug,coverage,profile
 ENV XDEBUG_CONFIG="client_host=host.docker.internal"

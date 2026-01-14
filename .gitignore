@@ -1,8 +1,7 @@
-.idea/
 docker-compose.override.yml
 
-# Created by https://www.toptal.com/developers/gitignore/api/linux,laravel
-# Edit at https://www.toptal.com/developers/gitignore?templates=linux,laravel
+# Created by https://www.toptal.com/developers/gitignore/api/linux,laravel,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=linux,laravel,visualstudiocode
 
 ### Laravel ###
 /vendor/
@@ -44,4 +43,23 @@ Homestead.json
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
-# End of https://www.toptal.com/developers/gitignore/api/linux,laravel
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
+
+# End of https://www.toptal.com/developers/gitignore/api/linux,laravel,visualstudiocode
