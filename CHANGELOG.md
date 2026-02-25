@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/nethesis/parceler/compare/v1.3.0...v1.3.1) (2026-02-25)
+
+
+### Bug Fixes
+
+* testing method ([2c68010](https://github.com/nethesis/parceler/commit/2c68010e2951ce2f766df54cbd782f7bcb8346dd))
+
 ## [1.3.0](https://github.com/nethesis/parceler/compare/v1.2.0...v1.3.0) (2026-01-07)
 
 
