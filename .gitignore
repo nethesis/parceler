@@ -1,4 +1,7 @@
 docker-compose.override.yml
+.github/skills/*
+.github/copilot-instructions.md
+AGENTS.md
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,laravel,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,laravel,visualstudiocode
