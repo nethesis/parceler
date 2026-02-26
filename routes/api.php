@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NetifydCatalogController;
 use App\Http\Controllers\NetifyLicenseController;
 use App\Http\Middleware\CommunityLicenceCheck;
 use App\Http\Middleware\EnterpriseLicenceCheck;
@@ -8,6 +9,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('/netifyd')->group(function () {
     Route::get('/license', [NetifyLicenseController::class, 'community']);
+
+    Route::get('/applications/catalog', [NetifydCatalogController::class, 'applicationsCatalog']);
+    Route::get('/applications/categories', [NetifydCatalogController::class, 'applicationsCategories']);
+    Route::get('/protocols/catalog', [NetifydCatalogController::class, 'protocolsCatalog']);
+    Route::get('/protocols/categories', [NetifydCatalogController::class, 'protocolsCategories']);
+
     Route::middleware(ForceBasicAuth::class)->group(function () {
         Route::get('/enterprise/license', [NetifyLicenseController::class, 'enterprise'])
             ->middleware(EnterpriseLicenceCheck::class);
