@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/nethesis/parceler/compare/v1.3.0...v1.4.0) (2026-03-02)
+
+
+### Features
+
+* added list of applications and protocols ([daa1e29](https://github.com/nethesis/parceler/commit/daa1e29491ecab82a928c7f4514dfc1616ed80a1))
+
+
+### Bug Fixes
+
+* testing method ([2c68010](https://github.com/nethesis/parceler/commit/2c68010e2951ce2f766df54cbd782f7bcb8346dd))
+
 ## [1.3.0](https://github.com/nethesis/parceler/compare/v1.2.0...v1.3.0) (2026-01-07)
 
 
