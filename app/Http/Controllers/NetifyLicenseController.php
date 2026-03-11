@@ -19,21 +19,30 @@ class NetifyLicenseController extends Controller
 
     private function run(NetifydLicenseRepository $licenseProvider, NetifydLicenseType $licenseType): JsonResponse
     {
-        // If license is in cache, return it.
+        // If license is in cache, validate and return it.
         $license = Cache::get($licenseType->cacheLabel());
         if ($license != null) {
             Log::debug('Requested netifyd license found in cache.');
             $expiration = Carbon::createFromTimestampUTC($license['expire_at']['unix'])->startOfDay()->toImmutable();
-            // License is still valid, return it.
+            // License is still valid, validate entitlements and return it.
             if ($expiration > now()->utc()->startOfDay()) {
-                return response()->json($license);
+                // Check if entitlements have changed
+                $configuredEntitlements = $licenseProvider->getConfiguredEntitlements();
+                if ($licenseProvider->entitlementsChanged($license, $configuredEntitlements)) {
+                    Log::warning('Entitlements have changed for cached license, will refresh.');
+                    Cache::forget($licenseType->cacheLabel());
+                    // Continue to remote refresh logic
+                } else {
+                    return response()->json($license);
+                }
+            } else {
+                Log::warning('Found license expired in cache, pruning.');
+                Cache::forget($licenseType->cacheLabel());
             }
-            Log::warning('Found license expired in cache, pruning.');
-            Cache::forget($licenseType->cacheLabel());
         }
 
         Log::debug('Checking remote server for license.');
-        // Check if the community license is on the remote server.
+        // Check if the license is on the remote server.
         try {
             $licenses = $licenseProvider->listLicenses();
         } catch (Exception $e) {
@@ -47,6 +56,18 @@ class NetifyLicenseController extends Controller
                 $license = $licenseProvider->createLicense($licenseType);
             } catch (Exception $e) {
                 return response()->json(['message' => $e->getMessage()], 500);
+            }
+        } else {
+            // Check if entitlements have changed on existing license
+            $configuredEntitlements = $licenseProvider->getConfiguredEntitlements();
+            if ($licenseProvider->entitlementsChanged($license, $configuredEntitlements)) {
+                Log::warning('Entitlements have changed for remote license, deleting and recreating.');
+                try {
+                    $licenseProvider->deleteLicense($license['serial']);
+                    $license = $licenseProvider->createLicense($licenseType);
+                } catch (Exception $e) {
+                    return response()->json(['message' => 'Could not refresh license due to entitlements change: '.$e->getMessage()], 500);
+                }
             }
         }
         // Got license, checking if everything is in place.

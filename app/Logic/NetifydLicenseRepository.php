@@ -2,6 +2,7 @@
 
 namespace App\Logic;
 
+use App\Entitlements;
 use App\NetifydLicenseType;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
@@ -39,10 +40,7 @@ class NetifydLicenseRepository
                     'issued_to' => $licenseType->label(),
                     'duration_days' => $licenseType->durationDays(),
                     'description' => 'License provided to '.$licenseType->label().' instances.',
-                    'entitlements' => [
-                        'netify-proc-aggregator',
-                        'netify-proc-flow-actions',
-                    ],
+                    'entitlements' => $this->getConfiguredEntitlements(),
                 ])->throw()
                 ->json('data');
         } catch (ConnectionException|RequestException $e) {
@@ -64,6 +62,46 @@ class NetifydLicenseRepository
 
         } catch (ConnectionException|RequestException $e) {
             throw new Exception('Could not renew license on netifyd: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Get configured entitlements.
+     *
+     * @return array<string>
+     */
+    public function getConfiguredEntitlements(): array
+    {
+        return Entitlements::all();
+    }
+
+    /**
+     * Check if any configured entitlement is missing from the license response.
+     */
+    public function entitlementsChanged(array $license, array $configuredEntitlements): bool
+    {
+        foreach ($configuredEntitlements as $entitlement) {
+            if (! array_key_exists($entitlement, $license)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Delete a license by serial.
+     *
+     * @throws Exception
+     */
+    public function deleteLicense(string $serial): void
+    {
+        try {
+            Http::withHeader('x-api-key', $this->apiKey)
+                ->delete(config('netifyd.endpoint').'/api/v2/integrator/licenses/'.$serial)
+                ->throw();
+        } catch (ConnectionException|RequestException $e) {
+            throw new Exception('Could not delete license on netifyd: '.$e->getMessage());
         }
     }
 }

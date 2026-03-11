@@ -11,10 +11,17 @@ enum NetifydLicenseType: string
 
     public function label(): string
     {
-        return match ($this) {
+        $label = match ($this) {
             self::COMMUNITY => 'NethSecurity Community Edition',
             self::ENTERPRISE => 'NethSecurity Enterprise Edition',
         };
+
+        $suffix = config('netifyd.license-suffix');
+        if ($suffix != null) {
+            $label .= ' '.$suffix;
+        }
+
+        return $label;
     }
 
     public function cacheLabel(): string

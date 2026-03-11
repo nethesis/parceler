@@ -27,8 +27,13 @@ describe('middleware checking', function () {
             'expire_at' => [
                 'unix' => now()->addDays(2)->unix(),
             ],
+            'entitlements' => ['netify-proc-aggregator', 'netify-proc-flow-actions'],
         ];
         Cache::expects('get')->with(NetifydLicenseType::COMMUNITY->cacheLabel())->andReturn($fakeLicense);
+        partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) {
+            $mock->expects('getConfiguredEntitlements')->andReturn(['netify-proc-aggregator', 'netify-proc-flow-actions']);
+            $mock->expects('entitlementsChanged')->andReturn(false);
+        });
         get('/api/netifyd/license')
             ->assertOk()
             ->assertJson($fakeLicense);
@@ -51,8 +56,13 @@ describe('controller testing', function () {
             'expire_at' => [
                 'unix' => now()->addDays(2)->unix(),
             ],
+            'entitlements' => ['netify-proc-aggregator', 'netify-proc-flow-actions'],
         ];
         Cache::expects('get')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturn($fakeLicense);
+        partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) {
+            $mock->expects('getConfiguredEntitlements')->andReturn(['netify-proc-aggregator', 'netify-proc-flow-actions']);
+            $mock->expects('entitlementsChanged')->andReturn(false);
+        });
         withBasicAuth('', '')
             ->get('/api/netifyd/community/license')
             ->assertOk()
@@ -65,8 +75,13 @@ describe('controller testing', function () {
             'expire_at' => [
                 'unix' => now()->addDays(2)->unix(),
             ],
+            'entitlements' => ['netify-proc-aggregator', 'netify-proc-flow-actions'],
         ];
         Cache::expects('get')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturn($fakeLicense);
+        partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) {
+            $mock->expects('getConfiguredEntitlements')->andReturn(['netify-proc-aggregator', 'netify-proc-flow-actions']);
+            $mock->expects('entitlementsChanged')->andReturn(false);
+        });
         Http::preventStrayRequests();
         Http::fake();
         withBasicAuth('system-id', 'secret')
@@ -90,11 +105,14 @@ describe('controller testing', function () {
             'expire_at' => [
                 'unix' => now()->addDays(2)->unix(),
             ],
+            'entitlements' => ['netify-proc-aggregator', 'netify-proc-flow-actions'],
         ];
         Cache::expects('put')->withSomeOfArgs(NetifydLicenseType::ENTERPRISE->cacheLabel(), $license);
         partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
             $mock->expects('listLicenses')
                 ->andReturn([$license]);
+            $mock->expects('getConfiguredEntitlements')->andReturn(['netify-proc-aggregator', 'netify-proc-flow-actions']);
+            $mock->expects('entitlementsChanged')->andReturn(false);
         });
         withBasicAuth('system-id', 'secret')
             ->get('/api/netifyd/community/license')
@@ -122,10 +140,13 @@ describe('controller testing', function () {
             'expire_at' => [
                 'unix' => now()->addDays(2)->unix(),
             ],
+            'entitlements' => ['netify-proc-aggregator', 'netify-proc-flow-actions'],
         ];
         partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
             $mock->expects('listLicenses')
                 ->andReturn([$license]);
+            $mock->expects('getConfiguredEntitlements')->andReturn(['netify-proc-aggregator', 'netify-proc-flow-actions']);
+            $mock->expects('entitlementsChanged')->andReturn(false);
         });
         Cache::expects('get')->with(NetifydLicenseType::ENTERPRISE->cacheLabel())->andReturnNull();
         Cache::expects('put')->withSomeOfArgs(NetifydLicenseType::ENTERPRISE->cacheLabel(), $license);
@@ -170,12 +191,15 @@ describe('controller testing', function () {
             'expire_at' => [
                 'unix' => now()->addDay()->unix(),
             ],
+            'entitlements' => ['netify-proc-aggregator', 'netify-proc-flow-actions'],
         ];
         partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
             $mock->expects('listLicenses')
                 ->andReturn([
                     $license,
                 ]);
+            $mock->expects('getConfiguredEntitlements')->andReturn(['netify-proc-aggregator', 'netify-proc-flow-actions']);
+            $mock->expects('entitlementsChanged')->andReturn(false);
             $mock->expects('renewLicense')
                 ->with(NetifydLicenseType::ENTERPRISE, 'EXAMPLE-ENTERPRISE-SERIAL')
                 ->andReturn($license);
@@ -192,12 +216,15 @@ describe('controller testing', function () {
             'expire_at' => [
                 'unix' => now()->addDay()->unix(),
             ],
+            'entitlements' => ['netify-proc-aggregator', 'netify-proc-flow-actions'],
         ];
         partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
             $mock->expects('listLicenses')
                 ->andReturn([
                     $license,
                 ]);
+            $mock->expects('getConfiguredEntitlements')->andReturn(['netify-proc-aggregator', 'netify-proc-flow-actions']);
+            $mock->expects('entitlementsChanged')->andReturn(false);
             $mock->expects('renewLicense')
                 ->with(NetifydLicenseType::ENTERPRISE, 'EXAMPLE-ENTERPRISE-SERIAL')
                 ->andThrow(new Exception('Cannot renew license'));
@@ -215,12 +242,15 @@ describe('controller testing', function () {
             'expire_at' => [
                 'unix' => now()->subDay()->unix(),
             ],
+            'entitlements' => ['netify-proc-aggregator', 'netify-proc-flow-actions'],
         ];
         partialMock(NetifydLicenseRepository::class, function (MockInterface $mock) use ($license) {
             $mock->expects('listLicenses')
                 ->andReturn([
                     $license,
                 ]);
+            $mock->expects('getConfiguredEntitlements')->andReturn(['netify-proc-aggregator', 'netify-proc-flow-actions']);
+            $mock->expects('entitlementsChanged')->andReturn(false);
             $mock->expects('renewLicense')
                 ->with(NetifydLicenseType::ENTERPRISE, 'EXAMPLE-ENTERPRISE-SERIAL')
                 ->andThrow(new Exception('Cannot renew license'));
