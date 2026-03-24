@@ -7,6 +7,7 @@ enum Entitlements: string
     case PROC_AGGREGATOR = 'netify-proc-aggregator';
     case PROC_FLOW_ACTIONS = 'netify-proc-flow-actions';
     case PROC_DEV_DISCOVERY = 'netify-proc-dev-discovery';
+    case SINK_SQLITE = 'netify-sink-sqlite';
 
     /**
      * Get all configured entitlements.
@@ -19,6 +20,7 @@ enum Entitlements: string
             self::PROC_AGGREGATOR->value,
             self::PROC_FLOW_ACTIONS->value,
             self::PROC_DEV_DISCOVERY->value,
+            self::SINK_SQLITE->value,
         ];
     }
 }
