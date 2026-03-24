@@ -1,6 +1,7 @@
 <?php
 
 use App\Logic\NetifydCatalogRepository;
+use Carbon\Carbon;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -30,7 +31,7 @@ describe('applications catalog', function () {
         expect($this->repository->applicationsCatalog())->toBe($data['data']);
 
         Cache::shouldHaveReceived('get')->with('netifyd-applications-catalog')->once();
-        Cache::shouldHaveReceived('put')->with('netifyd-applications-catalog', $data['data'], \Mockery::type(\Carbon\Carbon::class))->once();
+        Cache::shouldHaveReceived('put')->with('netifyd-applications-catalog', $data['data'], Mockery::type(Carbon::class))->once();
 
         Http::assertSent(function (Request $request) {
             return $request->hasHeader('x-api-key', 'api-key')
@@ -68,7 +69,7 @@ describe('applications categories', function () {
         expect($this->repository->applicationsCategories())->toBe($data['data']);
 
         Cache::shouldHaveReceived('get')->with('netifyd-applications-categories')->once();
-        Cache::shouldHaveReceived('put')->with('netifyd-applications-categories', $data['data'], \Mockery::type(\Carbon\Carbon::class))->once();
+        Cache::shouldHaveReceived('put')->with('netifyd-applications-categories', $data['data'], Mockery::type(Carbon::class))->once();
 
         Http::assertSent(function (Request $request) {
             return $request->hasHeader('x-api-key', 'api-key')
@@ -106,7 +107,7 @@ describe('protocols catalog', function () {
         expect($this->repository->protocolsCatalog())->toBe($data['data']);
 
         Cache::shouldHaveReceived('get')->with('netifyd-protocols-catalog')->once();
-        Cache::shouldHaveReceived('put')->with('netifyd-protocols-catalog', $data['data'], \Mockery::type(\Carbon\Carbon::class))->once();
+        Cache::shouldHaveReceived('put')->with('netifyd-protocols-catalog', $data['data'], Mockery::type(Carbon::class))->once();
 
         Http::assertSent(function (Request $request) {
             return $request->hasHeader('x-api-key', 'api-key')
@@ -144,7 +145,7 @@ describe('protocols categories', function () {
         expect($this->repository->protocolsCategories())->toBe($data['data']);
 
         Cache::shouldHaveReceived('get')->with('netifyd-protocols-categories')->once();
-        Cache::shouldHaveReceived('put')->with('netifyd-protocols-categories', $data['data'], \Mockery::type(\Carbon\Carbon::class))->once();
+        Cache::shouldHaveReceived('put')->with('netifyd-protocols-categories', $data['data'], Mockery::type(Carbon::class))->once();
 
         Http::assertSent(function (Request $request) {
             return $request->hasHeader('x-api-key', 'api-key')
