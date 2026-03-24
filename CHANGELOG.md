@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0](https://github.com/nethesis/parceler/compare/v1.4.0...v1.5.0) (2026-03-24)
+
+
+### Features
+
+* added entitlements change support ([c90368a](https://github.com/nethesis/parceler/commit/c90368aa1255cf3bf65ba189180a17073f5c6303))
+* added netify-sink-sqlite ([4d06341](https://github.com/nethesis/parceler/commit/4d06341ea7ed5b3023bc51fd04deef0ab7e17d66))
+
 ## [1.4.0](https://github.com/nethesis/parceler/compare/v1.3.0...v1.4.0) (2026-03-02)
 
 
