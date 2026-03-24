@@ -1,6 +1,7 @@
 {
     "agents": [
-        "copilot"
+        "copilot",
+        "opencode"
     ],
     "guidelines": true,
     "herd_mcp": false,

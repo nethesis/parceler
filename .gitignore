@@ -2,6 +2,8 @@ docker-compose.override.yml
 .github/skills/*
 .github/copilot-instructions.md
 AGENTS.md
+opencode.json
+.agents
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,laravel,visualstudiocode,phpstorm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,laravel,visualstudiocode,phpstorm+all
