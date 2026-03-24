@@ -1,5 +1,5 @@
 {
-	"name": "Controller DEV",
+	"name": "Parceler DEV",
 	"dockerComposeFile": [
 		"../docker-compose.yml"
 	],
