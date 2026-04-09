@@ -9,6 +9,7 @@ COPY --from=docker.io/mlocati/php-extension-installer:2.10.9 /usr/bin/install-ph
 ADD --chmod=777 \
     --checksum=sha256:206a8f9b2177703fc5aa924d85ad6c72e82413e2d09635b4c9c82a1b65b5b3d5 \
     https://github.com/eficode/wait-for/releases/download/v2.2.4/wait-for /usr/local/bin/wait-for
+COPY containers/php/config/conf.d/expose_php.ini /usr/local/etc/php/conf.d/expose_php.ini
 # configure entrypoints and image
 ARG PHP_EXTENSIONS
 ARG ADDITIONAL_PACKAGES
