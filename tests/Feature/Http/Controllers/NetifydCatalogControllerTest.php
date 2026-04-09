@@ -1,22 +1,39 @@
 <?php
 
 use App\Logic\NetifydCatalogRepository;
+use Illuminate\Support\Facades\Storage;
 use Mockery\MockInterface;
 
 use function Pest\Laravel\get;
 use function Pest\Laravel\partialMock;
 
 describe('applications catalog endpoint', function () {
-    it('returns catalog data from the repository', function () {
-        $data = [['id' => 1, 'label' => 'WhatsApp']];
+    it('downloads the stored file when temporary urls are unavailable', function () {
+        $path = 'netifyd/applications-catalog.json';
 
-        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($data) {
-            $mock->allows('applicationsCatalog')->andReturn($data);
+        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($path) {
+            $mock->allows('applicationsCatalog')->andReturn($path);
         });
 
+        Storage::shouldReceive('providesTemporaryUrls')->andReturnFalse();
+        Storage::shouldReceive('download')->with($path)->andReturn(response('', 200));
+
         get('/api/netifyd/applications/catalog')
-            ->assertOk()
-            ->assertJson($data);
+            ->assertOk();
+    });
+
+    it('redirects to a temporary url when supported', function () {
+        $path = 'netifyd/applications-catalog.json';
+
+        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($path) {
+            $mock->allows('applicationsCatalog')->andReturn($path);
+        });
+
+        Storage::shouldReceive('providesTemporaryUrls')->andReturnTrue();
+        Storage::shouldReceive('temporaryUrl')->with($path, Mockery::type(DateTimeInterface::class))->andReturn('https://example.test/temp');
+
+        get('/api/netifyd/applications/catalog')
+            ->assertRedirect('https://example.test/temp');
     });
 
     it('returns 500 when the repository throws', function () {
@@ -31,16 +48,32 @@ describe('applications catalog endpoint', function () {
 });
 
 describe('applications categories endpoint', function () {
-    it('returns categories data from the repository', function () {
-        $data = [['id' => 1, 'tag' => 'messaging', 'label' => 'Messaging']];
+    it('downloads the stored file when temporary urls are unavailable', function () {
+        $path = 'netifyd/applications-categories.json';
 
-        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($data) {
-            $mock->allows('applicationsCategories')->andReturn($data);
+        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($path) {
+            $mock->allows('applicationsCategories')->andReturn($path);
         });
 
+        Storage::shouldReceive('providesTemporaryUrls')->andReturnFalse();
+        Storage::shouldReceive('download')->with($path)->andReturn(response('', 200));
+
         get('/api/netifyd/applications/categories')
-            ->assertOk()
-            ->assertJson($data);
+            ->assertOk();
+    });
+
+    it('redirects to a temporary url when supported', function () {
+        $path = 'netifyd/applications-categories.json';
+
+        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($path) {
+            $mock->allows('applicationsCategories')->andReturn($path);
+        });
+
+        Storage::shouldReceive('providesTemporaryUrls')->andReturnTrue();
+        Storage::shouldReceive('temporaryUrl')->with($path, Mockery::type(DateTimeInterface::class))->andReturn('https://example.test/temp');
+
+        get('/api/netifyd/applications/categories')
+            ->assertRedirect('https://example.test/temp');
     });
 
     it('returns 500 when the repository throws', function () {
@@ -55,16 +88,32 @@ describe('applications categories endpoint', function () {
 });
 
 describe('protocols catalog endpoint', function () {
-    it('returns catalog data from the repository', function () {
-        $data = [['id' => 96, 'label' => 'TFTP']];
+    it('downloads the stored file when temporary urls are unavailable', function () {
+        $path = 'netifyd/protocols-catalog.json';
 
-        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($data) {
-            $mock->allows('protocolsCatalog')->andReturn($data);
+        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($path) {
+            $mock->allows('protocolsCatalog')->andReturn($path);
         });
 
+        Storage::shouldReceive('providesTemporaryUrls')->andReturnFalse();
+        Storage::shouldReceive('download')->with($path)->andReturn(response('', 200));
+
         get('/api/netifyd/protocols/catalog')
-            ->assertOk()
-            ->assertJson($data);
+            ->assertOk();
+    });
+
+    it('redirects to a temporary url when supported', function () {
+        $path = 'netifyd/protocols-catalog.json';
+
+        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($path) {
+            $mock->allows('protocolsCatalog')->andReturn($path);
+        });
+
+        Storage::shouldReceive('providesTemporaryUrls')->andReturnTrue();
+        Storage::shouldReceive('temporaryUrl')->with($path, Mockery::type(DateTimeInterface::class))->andReturn('https://example.test/temp');
+
+        get('/api/netifyd/protocols/catalog')
+            ->assertRedirect('https://example.test/temp');
     });
 
     it('returns 500 when the repository throws', function () {
@@ -79,16 +128,32 @@ describe('protocols catalog endpoint', function () {
 });
 
 describe('protocols categories endpoint', function () {
-    it('returns categories data from the repository', function () {
-        $data = [['id' => 4, 'tag' => 'file-server', 'label' => 'File Server']];
+    it('downloads the stored file when temporary urls are unavailable', function () {
+        $path = 'netifyd/protocols-categories.json';
 
-        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($data) {
-            $mock->allows('protocolsCategories')->andReturn($data);
+        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($path) {
+            $mock->allows('protocolsCategories')->andReturn($path);
         });
 
+        Storage::shouldReceive('providesTemporaryUrls')->andReturnFalse();
+        Storage::shouldReceive('download')->with($path)->andReturn(response('', 200));
+
         get('/api/netifyd/protocols/categories')
-            ->assertOk()
-            ->assertJson($data);
+            ->assertOk();
+    });
+
+    it('redirects to a temporary url when supported', function () {
+        $path = 'netifyd/protocols-categories.json';
+
+        partialMock(NetifydCatalogRepository::class, function (MockInterface $mock) use ($path) {
+            $mock->allows('protocolsCategories')->andReturn($path);
+        });
+
+        Storage::shouldReceive('providesTemporaryUrls')->andReturnTrue();
+        Storage::shouldReceive('temporaryUrl')->with($path, Mockery::type(DateTimeInterface::class))->andReturn('https://example.test/temp');
+
+        get('/api/netifyd/protocols/categories')
+            ->assertRedirect('https://example.test/temp');
     });
 
     it('returns 500 when the repository throws', function () {

@@ -4,44 +4,54 @@ namespace App\Http\Controllers;
 
 use App\Logic\NetifydCatalogRepository;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Response;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 class NetifydCatalogController extends Controller
 {
-    public function applicationsCatalog(NetifydCatalogRepository $catalog): JsonResponse
+    public function applicationsCatalog(NetifydCatalogRepository $catalog): Response|RedirectResponse
     {
         try {
-            return Response::json($catalog->applicationsCatalog());
+            return $this->serveCatalog($catalog->applicationsCatalog());
         } catch (Exception $e) {
-            return Response::json(['message' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
-    public function applicationsCategories(NetifydCatalogRepository $catalog): JsonResponse
+    public function applicationsCategories(NetifydCatalogRepository $catalog): Response|RedirectResponse
     {
         try {
-            return Response::json(data: $catalog->applicationsCategories());
+            return $this->serveCatalog($catalog->applicationsCategories());
         } catch (Exception $e) {
-            return Response::json(['message' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
-    public function protocolsCatalog(NetifydCatalogRepository $catalog): JsonResponse
+    public function protocolsCatalog(NetifydCatalogRepository $catalog): Response|RedirectResponse
     {
         try {
-            return Response::json($catalog->protocolsCatalog());
+            return $this->serveCatalog($catalog->protocolsCatalog());
         } catch (Exception $e) {
-            return Response::json(['message' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
-    public function protocolsCategories(NetifydCatalogRepository $catalog): JsonResponse
+    public function protocolsCategories(NetifydCatalogRepository $catalog): Response|RedirectResponse
     {
         try {
-            return Response::json($catalog->protocolsCategories());
+            return $this->serveCatalog($catalog->protocolsCategories());
         } catch (Exception $e) {
-            return Response::json(['message' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
+    }
+
+    private function serveCatalog(string $path): Response|RedirectResponse
+    {
+        if (! Storage::providesTemporaryUrls()) {
+            return Storage::download($path);
+        }
+
+        return redirect(Storage::temporaryUrl($path, now()->addMinute()));
     }
 }

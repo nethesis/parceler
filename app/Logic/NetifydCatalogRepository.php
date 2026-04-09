@@ -7,61 +7,53 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class NetifydCatalogRepository
 {
+    private const int CACHE_TTL_SECONDS = 43200;
+
     public function __construct(private string $endpoint, private string $apiKey) {}
 
     /**
-     * @return array<int, mixed>
-     *
      * @throws Exception
      */
-    public function applicationsCatalog(): array
+    public function applicationsCatalog(): string
     {
-        return $this->fetch('applications/catalog', 'netifyd-applications-catalog');
+        return $this->fetch('applications/catalog', 'netifyd-applications-catalog', 'netifyd/applications-catalog.json');
     }
 
     /**
-     * @return array<int, mixed>
-     *
      * @throws Exception
      */
-    public function applicationsCategories(): array
+    public function applicationsCategories(): string
     {
-        return $this->fetch('applications/categories', 'netifyd-applications-categories');
+        return $this->fetch('applications/categories', 'netifyd-applications-categories', 'netifyd/applications-categories.json');
     }
 
     /**
-     * @return array<int, mixed>
-     *
      * @throws Exception
      */
-    public function protocolsCatalog(): array
+    public function protocolsCatalog(): string
     {
-        return $this->fetch('protocols/catalog', 'netifyd-protocols-catalog');
+        return $this->fetch('protocols/catalog', 'netifyd-protocols-catalog', 'netifyd/protocols-catalog.json');
     }
 
     /**
-     * @return array<int, mixed>
-     *
      * @throws Exception
      */
-    public function protocolsCategories(): array
+    public function protocolsCategories(): string
     {
-        return $this->fetch('protocols/categories', 'netifyd-protocols-categories');
+        return $this->fetch('protocols/categories', 'netifyd-protocols-categories', 'netifyd/protocols-categories.json');
     }
 
     /**
-     * @return array<int, mixed>
-     *
      * @throws Exception
      */
-    private function fetch(string $path, string $cacheKey): array
+    private function fetch(string $path, string $cacheKey, string $storagePath): string
     {
-        $cached = Cache::get($cacheKey);
-        if ($cached != null) {
-            return $cached;
+        if ($this->isFresh($cacheKey, $storagePath)) {
+            return $storagePath;
         }
 
         try {
@@ -73,8 +65,19 @@ class NetifydCatalogRepository
             throw new Exception('Could not fetch '.$path.' from netifyd: '.$e->getMessage());
         }
 
-        Cache::put($cacheKey, $data, now()->addHours(12));
+        Storage::makeDirectory(dirname($storagePath));
+        Storage::put($storagePath, json_encode($data));
+        Cache::put($cacheKey, true, now()->addSeconds(self::CACHE_TTL_SECONDS));
 
-        return $data;
+        return $storagePath;
+    }
+
+    private function isFresh(string $cacheKey, string $storagePath): bool
+    {
+        if (! Storage::exists($storagePath)) {
+            return false;
+        }
+
+        return Cache::has($cacheKey);
     }
 }
