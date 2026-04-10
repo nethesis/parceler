@@ -52,7 +52,7 @@ class NetifydCatalogRepository
      */
     private function fetch(string $path, string $cacheKey, string $storagePath): string
     {
-        if ($this->isFresh($cacheKey, $storagePath)) {
+        if (Cache::has($cacheKey)) {
             return $storagePath;
         }
 
