@@ -71,13 +71,4 @@ class NetifydCatalogRepository
 
         return $storagePath;
     }
-
-    private function isFresh(string $cacheKey, string $storagePath): bool
-    {
-        if (! Storage::exists($storagePath)) {
-            return false;
-        }
-
-        return Cache::has($cacheKey);
-    }
 }
