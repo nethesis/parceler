@@ -4,6 +4,8 @@ docker-compose.override.yml
 AGENTS.md
 opencode.json
 .agents
+CLAUDE.md
+.claude
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,laravel,visualstudiocode,phpstorm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,laravel,visualstudiocode,phpstorm+all
