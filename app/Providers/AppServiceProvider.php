@@ -5,8 +5,11 @@ namespace App\Providers;
 use App\Logic\LicenceVerification;
 use App\Logic\NetifydCatalogRepository;
 use App\Logic\NetifydLicenseRepository;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nightwatch\Facades\Nightwatch;
 
@@ -35,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Event::listen(function (DiagnosingHealth $event) {
             Nightwatch::dontSample();
+        });
+
+        RateLimiter::for('netifyd', function (Request $request) {
+            return Limit::perMinute(config('netifyd.rate-limit'));
         });
     }
 }

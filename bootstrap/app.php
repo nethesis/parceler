@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,5 +20,17 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (ThrottleRequestsException $e, Request $request) {
+            $headers = $e->getHeaders();
+
+            if (array_key_exists('Retry-After', $headers)) {
+                $headers['Retry-After'] = random_int(300, 900);
+            }
+
+            return response()->json(
+                ['message' => 'Too many requests, please retry later.'],
+                Response::HTTP_SERVICE_UNAVAILABLE,
+                $headers
+            );
+        });
     })->create();

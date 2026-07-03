@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('/netifyd')->group(function () {
     Route::get('/license', [NetifyLicenseController::class, 'community']);
 
-    Route::get('/applications/catalog', [NetifydCatalogController::class, 'applicationsCatalog']);
-    Route::get('/applications/categories', [NetifydCatalogController::class, 'applicationsCategories']);
-    Route::get('/protocols/catalog', [NetifydCatalogController::class, 'protocolsCatalog']);
-    Route::get('/protocols/categories', [NetifydCatalogController::class, 'protocolsCategories']);
+    Route::middleware('throttle:netifyd')->group(function () {
+        Route::get('/applications/catalog', [NetifydCatalogController::class, 'applicationsCatalog']);
+        Route::get('/applications/categories', [NetifydCatalogController::class, 'applicationsCategories']);
+        Route::get('/protocols/catalog', [NetifydCatalogController::class, 'protocolsCatalog']);
+        Route::get('/protocols/categories', [NetifydCatalogController::class, 'protocolsCategories']);
+    });
 
     Route::middleware(ForceBasicAuth::class)->group(function () {
         Route::get('/enterprise/license', [NetifyLicenseController::class, 'enterprise'])
