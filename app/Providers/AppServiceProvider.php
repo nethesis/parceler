@@ -41,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('netifyd', function (Request $request) {
-            return Limit::perMinute(config('netifyd.rate-limit'));
+            return Limit::perMinute(config('netifyd.rate-limit'))->by($request->ip());
         });
     }
 }
