@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.5.1](https://github.com/nethesis/parceler/compare/v1.5.0...v1.5.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* adding rate-limit ([7102b7c](https://github.com/nethesis/parceler/commit/7102b7ca4aa98efac48bfef58adada3fbb8cddff))
+* getting there with the distribution ([fe60310](https://github.com/nethesis/parceler/commit/fe60310b889ec2ff246b78f28035e2b8cdd49762))
+* time limiting the rate limiter ([ded2db1](https://github.com/nethesis/parceler/commit/ded2db158e91121d8ea3ceae7da0a093b15e3947))
+
+
+### Performance Improvements
+
+* enabling gzip ([fc7db2a](https://github.com/nethesis/parceler/commit/fc7db2acf09f2436e6df74068c02c65e7b241dc7))
+
 ## [1.5.0](https://github.com/nethesis/parceler/compare/v1.4.0...v1.5.0) (2026-03-24)
 
 
