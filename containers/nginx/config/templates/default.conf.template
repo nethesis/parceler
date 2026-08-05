@@ -29,6 +29,19 @@ server {
         application/xml+rss
         image/svg+xml;
 
+    # opkg/wget send no credentials on the first request and wait for a
+    # WWW-Authenticate challenge before retrying. Answer that challenge here
+    # instead of booting PHP for it. Requests that DO carry credentials fall
+    # through to Laravel, where ForceBasicAuth + the licence middleware run
+    # as normal.
+    location ~ ^/repository/(community|enterprise)/ {
+        if ($http_authorization = "") {
+            add_header WWW-Authenticate "Basic" always;
+            return 401;
+        }
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
