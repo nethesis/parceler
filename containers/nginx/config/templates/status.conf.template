@@ -24,7 +24,7 @@ server {
     # the server-level allow/deny above already covers it. fastcgi_pass is
     # hardcoded because this file is static conf.d, not an envsubst template.
     location = /fpm-status {
-        fastcgi_pass php:9000;
+        fastcgi_pass ${FPM_HOST}:${FPM_PORT};
         fastcgi_param SCRIPT_FILENAME $fastcgi_script_name;
         include fastcgi_params;
     }
