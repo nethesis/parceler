@@ -29,12 +29,39 @@ server {
         application/xml+rss
         image/svg+xml;
 
+    # opkg/wget send no credentials on the first request and wait for a
+    # WWW-Authenticate challenge before retrying. Answer that challenge here
+    # instead of booting PHP for it. Requests that DO carry credentials fall
+    # through to Laravel, where ForceBasicAuth + the licence middleware run
+    # as normal.
+    location ~ ^/repository/(community|enterprise)/ {
+        if ($http_authorization = "") {
+            add_header WWW-Authenticate "Basic" always;
+            return 401;
+        }
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location = /robots.txt  { access_log off; log_not_found off; }
+
+    # php-fpm pool status, in-pod only. conf.d/status.conf's "listen localhost"
+    # server actually answers loopback requests to this path (see there for the
+    # reachable copy) - this copy exists so requests arriving via the published
+    # port, which land here instead, still get denied rather than 404ing.
+    location = /fpm-status {
+        allow 127.0.0.1;
+        allow ::1;
+        deny all;
+        access_log off;
+        fastcgi_pass ${FPM_HOST}:${FPM_PORT};
+        fastcgi_param SCRIPT_FILENAME $fastcgi_script_name;
+        include fastcgi_params;
+    }
 
     location ~ \.php$ {
         fastcgi_pass ${FPM_HOST}:${FPM_PORT};
