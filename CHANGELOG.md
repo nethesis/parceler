@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.3](https://github.com/nethesis/parceler/compare/v1.5.2...v1.5.3) (2026-08-05)
+
+
+### Bug Fixes
+
+* **nginx:** making php host customizable through templating ([25c1437](https://github.com/nethesis/parceler/commit/25c14376489f47dad3d0ccd6bab33e44bc7556a4))
+
 ## [1.5.2](https://github.com/nethesis/parceler/compare/v1.5.1...v1.5.2) (2026-08-05)
 
 
