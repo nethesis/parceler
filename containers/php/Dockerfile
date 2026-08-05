@@ -48,6 +48,7 @@ FROM base AS production
 RUN install-php-extensions opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY containers/php/config/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY containers/php/config/php-fpm.d/zzz-pool.conf /usr/local/etc/php-fpm.d/zzz-pool.conf
 ARG COMPOSER_ALLOW_SUPERUSER=1
 COPY --from=vendor /var/www/html/composer.json .
 COPY --from=vendor /var/www/html/composer.lock .
