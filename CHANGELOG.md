@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/nethesis/parceler/compare/v1.5.1...v1.5.2) (2026-08-05)
+
+
+### Performance Improvements
+
+* cut nightly load and expose pool observability ([#228](https://github.com/nethesis/parceler/issues/228)) ([8e8b037](https://github.com/nethesis/parceler/commit/8e8b03790864dd4ca30c87534217476fe6fd8efb))
+
 ## [1.5.1](https://github.com/nethesis/parceler/compare/v1.5.0...v1.5.1) (2026-08-03)
 
 
