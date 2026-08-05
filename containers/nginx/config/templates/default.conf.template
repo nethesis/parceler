@@ -49,6 +49,20 @@ server {
     location = /favicon.ico { access_log off; log_not_found off; }
     location = /robots.txt  { access_log off; log_not_found off; }
 
+    # php-fpm pool status, in-pod only. conf.d/status.conf's "listen localhost"
+    # server actually answers loopback requests to this path (see there for the
+    # reachable copy) - this copy exists so requests arriving via the published
+    # port, which land here instead, still get denied rather than 404ing.
+    location = /fpm-status {
+        allow 127.0.0.1;
+        allow ::1;
+        deny all;
+        access_log off;
+        fastcgi_pass ${FPM_HOST}:${FPM_PORT};
+        fastcgi_param SCRIPT_FILENAME $fastcgi_script_name;
+        include fastcgi_params;
+    }
+
     location ~ \.php$ {
         fastcgi_pass ${FPM_HOST}:${FPM_PORT};
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
