@@ -12,11 +12,13 @@ use Carbon\Carbon;
 use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Attributes\Timeout;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
+#[Timeout(3600)]
 class Release implements ShouldQueue
 {
     use Queueable;

@@ -10,9 +10,11 @@ namespace App\Listeners;
 use App\Events\SnapshotCreated;
 use DateTimeInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\Timeout;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
+#[Timeout(3600)]
 class CleanRepository implements ShouldQueue
 {
     /**

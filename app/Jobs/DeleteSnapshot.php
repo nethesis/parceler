@@ -10,9 +10,11 @@ namespace App\Jobs;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Attributes\Timeout;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+#[Timeout(3600)]
 class DeleteSnapshot implements ShouldQueue
 {
     use Batchable, Queueable;

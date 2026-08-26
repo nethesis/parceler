@@ -40,7 +40,7 @@ elif [ "$1" = "worker" ]; then
     wait_for_php_fpm
     wait_for_redis
     optimize
-    exec su -s /bin/sh -c "php artisan queue:work --tries=3 --timeout=1800" www-data
+    exec su -s /bin/sh -c "php artisan queue:work --tries=3" www-data
 elif [ "$1" = "nightwatch" ]; then
     wait_for_php_fpm
     wait_for_redis

@@ -10,9 +10,11 @@ namespace App\Listeners;
 use App\Events\RepositorySynced;
 use App\Events\SnapshotCreated;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\Timeout;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+#[Timeout(7200)]
 class ProcessRepositoryUpstream implements ShouldQueue
 {
     /**
