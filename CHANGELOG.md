@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.4](https://github.com/nethesis/parceler/compare/v1.5.3...v1.5.4) (2026-08-26)
+
+
+### Bug Fixes
+
+* adjusting job timeout ([f2b6001](https://github.com/nethesis/parceler/commit/f2b6001f221fb66e29da0834aa86a55c86efc544))
+
 ## [1.5.3](https://github.com/nethesis/parceler/compare/v1.5.2...v1.5.3) (2026-08-05)
 
 
