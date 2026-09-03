@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/nethesis/parceler/compare/v1.5.4...v1.6.0) (2026-09-03)
+
+
+### Features
+
+* added application-signature license for enterprise ([1f568e8](https://github.com/nethesis/parceler/commit/1f568e82525a3727193bb686128e7c4f25672050))
+
 ## [1.5.4](https://github.com/nethesis/parceler/compare/v1.5.3...v1.5.4) (2026-08-26)
 
 
