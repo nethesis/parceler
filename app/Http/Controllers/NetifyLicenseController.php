@@ -27,7 +27,7 @@ class NetifyLicenseController extends Controller
             // License is still valid, validate entitlements and return it.
             if ($expiration > now()->utc()->startOfDay()) {
                 // Check if entitlements have changed
-                $configuredEntitlements = $licenseProvider->getConfiguredEntitlements();
+                $configuredEntitlements = $licenseProvider->getConfiguredEntitlements($licenseType);
                 if ($licenseProvider->entitlementsChanged($license, $configuredEntitlements)) {
                     Log::warning('Entitlements have changed for cached license, will refresh.');
                     Cache::forget($licenseType->cacheLabel());
@@ -59,7 +59,7 @@ class NetifyLicenseController extends Controller
             }
         } else {
             // Check if entitlements have changed on existing license
-            $configuredEntitlements = $licenseProvider->getConfiguredEntitlements();
+            $configuredEntitlements = $licenseProvider->getConfiguredEntitlements($licenseType);
             if ($licenseProvider->entitlementsChanged($license, $configuredEntitlements)) {
                 Log::warning('Entitlements have changed for remote license, deleting and recreating.');
                 try {

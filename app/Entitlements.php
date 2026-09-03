@@ -6,21 +6,24 @@ enum Entitlements: string
 {
     case PROC_AGGREGATOR = 'netify-proc-aggregator';
     case PROC_FLOW_ACTIONS = 'netify-proc-flow-actions';
-    case PROC_DEV_DISCOVERY = 'netify-proc-dev-discovery';
-    case SINK_SQLITE = 'netify-sink-sqlite';
+    case APPLICATION_SIGNATURES = 'application-signatures';
 
     /**
-     * Get all configured entitlements.
+     * Get the entitlements configured for a license type.
      *
      * @return array<string>
      */
-    public static function all(): array
+    public static function for(NetifydLicenseType $licenseType): array
     {
-        return [
+        $entitlements = [
             self::PROC_AGGREGATOR->value,
             self::PROC_FLOW_ACTIONS->value,
-            self::PROC_DEV_DISCOVERY->value,
-            self::SINK_SQLITE->value,
         ];
+
+        if ($licenseType === NetifydLicenseType::ENTERPRISE) {
+            $entitlements[] = self::APPLICATION_SIGNATURES->value;
+        }
+
+        return $entitlements;
     }
 }

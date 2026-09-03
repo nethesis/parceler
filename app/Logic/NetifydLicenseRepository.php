@@ -40,7 +40,7 @@ class NetifydLicenseRepository
                     'issued_to' => $licenseType->label(),
                     'duration_days' => $licenseType->durationDays(),
                     'description' => 'License provided to '.$licenseType->label().' instances.',
-                    'entitlements' => $this->getConfiguredEntitlements(),
+                    'entitlements' => $this->getConfiguredEntitlements($licenseType),
                 ])->throw()
                 ->json('data');
         } catch (ConnectionException|RequestException $e) {
@@ -66,13 +66,13 @@ class NetifydLicenseRepository
     }
 
     /**
-     * Get configured entitlements.
+     * Get configured entitlements for a license type.
      *
      * @return array<string>
      */
-    public function getConfiguredEntitlements(): array
+    public function getConfiguredEntitlements(NetifydLicenseType $licenseType): array
     {
-        return Entitlements::all();
+        return Entitlements::for($licenseType);
     }
 
     /**

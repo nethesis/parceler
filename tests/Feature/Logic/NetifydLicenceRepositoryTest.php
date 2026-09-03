@@ -45,13 +45,24 @@ it('handles failing to renew license', function (NetifydLicenseType $licenseType
 })->throws('Could not renew license on netifyd:')
     ->with(NetifydLicenseType::cases());
 
-it('returns configured entitlements', function () {
+it('returns configured entitlements without application signatures for community', function () {
     $repository = new NetifydLicenseRepository('http://127.0.0.1', 'api-key');
-    $entitlements = $repository->getConfiguredEntitlements();
+    $entitlements = $repository->getConfiguredEntitlements(NetifydLicenseType::COMMUNITY);
     expect($entitlements)
         ->toBeArray()
         ->toContain('netify-proc-aggregator')
-        ->toContain('netify-proc-flow-actions');
+        ->toContain('netify-proc-flow-actions')
+        ->not->toContain('application-signatures');
+});
+
+it('returns configured entitlements with application signatures for enterprise', function () {
+    $repository = new NetifydLicenseRepository('http://127.0.0.1', 'api-key');
+    $entitlements = $repository->getConfiguredEntitlements(NetifydLicenseType::ENTERPRISE);
+    expect($entitlements)
+        ->toBeArray()
+        ->toContain('netify-proc-aggregator')
+        ->toContain('netify-proc-flow-actions')
+        ->toContain('application-signatures');
 });
 
 it('detects when entitlements have changed', function () {
