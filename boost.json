@@ -8,8 +8,9 @@
     "nightwatch": true,
     "sail": false,
     "skills": [
+        "infer-conventions",
         "laravel-best-practices",
-        "configure-nightwatch",
-        "pest-testing"
+        "testing-best-practices",
+        "configure-nightwatch"
     ]
 }
