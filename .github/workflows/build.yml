@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       php-tags: ${{ steps.meta-php.outputs.json }}
       nginx-tags: ${{ steps.meta-nginx.outputs.json }}
@@ -62,7 +62,7 @@ jobs:
 
   sbom:
     name: Generate SBOM
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: build
     strategy:
       matrix:
