@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/nethesis/parceler/compare/v1.6.0...v1.6.1) (2026-10-22)
+
+
+### Bug Fixes
+
+* **deps:** update php docker tag to v8.5.12 ([9a0df08](https://github.com/nethesis/parceler/commit/9a0df08da592874c6cfdc6eca96841877e83d797))
+
 ## [1.6.0](https://github.com/nethesis/parceler/compare/v1.5.4...v1.6.0) (2026-09-18)
 
 
