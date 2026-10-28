@@ -1,13 +1,9 @@
 <?php
 
-use App\Events\RepositorySynced;
-use App\Events\SnapshotCreated;
 use App\Jobs\SyncRepository;
-use App\Listeners\CleanRepository;
-use App\Listeners\ProcessRepositoryUpstream;
-use App\Models\Repository;
+use App\Logic\PackageRepository;
+use Illuminate\Process\Exceptions\ProcessFailedException;
 use Illuminate\Process\PendingProcess;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -15,83 +11,71 @@ use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\artisan;
 use function Pest\Laravel\freezeTime;
 
-dataset('command', ['repository:sync']);
-
-test('runs command correctly', function () {
+it('runs the configured command without timeout', function () {
+    config(['repositories.command' => 'rclone sync upstream source/nethsecurity']);
     Process::fake();
-    Event::fake();
-    $repository = Repository::factory()->create();
-    SyncRepository::dispatchSync($repository);
-    Process::assertRan(function (PendingProcess $process) use ($repository): bool {
-        return is_null($process->timeout)
-            && $process->command == $repository->command;
-    });
-    Event::assertDispatched(RepositorySynced::class);
-});
-
-test('can sync repository from command line', function ($command) {
-    $repositories = Repository::factory()->count(3)->create();
-    Queue::fake();
-    artisan("$command {$repositories->pluck('name')->join(' ')}")
-        ->assertSuccessful();
-    Queue::assertCount($repositories->count());
-    Queue::assertPushed(SyncRepository::class, $repositories->count());
-})->with('command');
-
-test('repository upstream processing', function () {
-    $repository = Repository::factory()->create(['sub_dir' => 'example']);
-    $listener = new ProcessRepositoryUpstream;
-    $sourcePath = config('repositories.source_folder').'/'.$repository->name;
-    $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
-    Event::fake();
     Storage::fake();
-    Storage::put("$sourcePath/example/file1.txt", 'file1');
-    Storage::put("$sourcePath/example/file2.txt", 'file2');
-    Storage::put("$sourcePath/example/file3.txt", 'file3');
-    $listener->handle(new RepositorySynced($repository));
-    Storage::assertExists("$snapshotPath/".now()->toAtomString().'/file1.txt');
-    Storage::assertExists("$snapshotPath/".now()->toAtomString().'/file2.txt');
-    Storage::assertExists("$snapshotPath/".now()->toAtomString().'/file3.txt');
-    Event::assertDispatched(function (SnapshotCreated $event) use ($repository): bool {
-        return $event->repository->is($repository);
+
+    SyncRepository::dispatchSync();
+
+    Process::assertRan(function (PendingProcess $process): bool {
+        return is_null($process->timeout)
+            && $process->command === 'rclone sync upstream source/nethsecurity';
     });
 });
 
-test('cleanup old directories', function () {
-    freezeTime(function () {
-        $repository = Repository::factory()->create([
-            'delay' => 2,
-        ]);
-        Storage::fake();
-        $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
-        Storage::createDirectory($snapshotPath.'/'.now()->subDays(3)->toAtomString());
-        Storage::createDirectory($snapshotPath.'/'.now()->subDays(2)->toAtomString());
-        Storage::createDirectory($snapshotPath.'/'.now()->subDay()->toAtomString());
-        $listener = new CleanRepository;
-        $listener->handle(new SnapshotCreated($repository));
-        Storage::assertMissing($snapshotPath.'/'.now()->subDays(3)->toAtomString());
-        Storage::assertMissing($snapshotPath.'/'.now()->subDays(2)->toAtomString());
-        Storage::assertExists($snapshotPath.'/'.now()->subDay()->toAtomString());
-    });
+it('snapshots the source sub directory', function () {
+    config(['repositories.sub_dir' => 'example']);
+    freezeTime();
+    Process::fake();
+    Storage::fake();
+    $repository = app(PackageRepository::class);
+    Storage::put($repository->sourceDir().'/file1.txt', 'file1');
+    Storage::put($repository->sourceDir().'/nested/file2.txt', 'file2');
+
+    SyncRepository::dispatchSync();
+
+    $snapshot = $repository->snapshotDir().'/'.now()->toAtomString();
+    Storage::assertExists($snapshot.'/file1.txt');
+    Storage::assertExists($snapshot.'/nested/file2.txt');
 });
 
-test('cleanup old directories with frozen dir', function () {
-    freezeTime(function () {
-        $repository = Repository::factory()->freeze()->create([
-            'delay' => 2,
-            'freeze' => 'frozen_dir',
-        ]);
-        Storage::fake();
-        $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
-        Storage::createDirectory($snapshotPath.'/'.now()->subDays(3)->toAtomString());
-        Storage::createDirectory($snapshotPath.'/'.now()->subDays(2)->toAtomString());
-        Storage::createDirectory($snapshotPath.'/'.now()->subDay()->toAtomString());
-        Storage::createDirectory($snapshotPath.'/'.$repository->freeze);
-        $listener = new CleanRepository;
-        $listener->handle(new SnapshotCreated($repository));
-        Storage::assertMissing($snapshotPath.'/'.now()->subDays(3)->toAtomString());
-        Storage::assertMissing($snapshotPath.'/'.now()->subDays(2)->toAtomString());
-        Storage::assertExists($snapshotPath.'/'.now()->subDay()->toAtomString());
-        Storage::assertExists($snapshotPath.'/'.$repository->freeze);
-    });
+it('does not snapshot when the command fails', function () {
+    Process::fake(fn () => Process::result(exitCode: 1));
+    Storage::fake();
+    $repository = app(PackageRepository::class);
+    Storage::put($repository->sourceDir().'/file1.txt', 'file1');
+
+    expect(fn () => SyncRepository::dispatchSync())->toThrow(ProcessFailedException::class);
+
+    expect($repository->snapshots())->toBeEmpty();
+});
+
+it('deletes snapshots older than the delay except the served one', function () {
+    config(['repositories.delay' => 2]);
+    freezeTime();
+    Process::fake();
+    Storage::fake();
+    $repository = app(PackageRepository::class);
+    $served = now()->subDays(5)->toAtomString();
+    $old = now()->subDays(4)->toAtomString();
+    $recent = now()->subDay()->toAtomString();
+    foreach ([$served, $old, $recent] as $snapshot) {
+        Storage::createDirectory($repository->snapshotDir().'/'.$snapshot);
+    }
+    $repository->setCurrent($served);
+
+    SyncRepository::dispatchSync();
+
+    expect($repository->snapshots()->all())->toBe([$served, $recent, now()->toAtomString()]);
+});
+
+it('dispatches the sync from the command line', function () {
+    Queue::fake([SyncRepository::class]);
+
+    artisan('repository:sync')
+        ->expectsOutput('Dispatching sync.')
+        ->assertSuccessful();
+
+    Queue::assertPushed(SyncRepository::class);
 });

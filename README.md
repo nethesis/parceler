@@ -30,11 +30,6 @@ Base file request:
 ```mermaid
 sequenceDiagram
     client ->> nginx/php: Request file
-    nginx/php ->>database: Get repository
-    database ->> nginx/php: 
-    opt repository not found
-        nginx/php ->> client: 404 Not Found
-    end
     nginx/php ->> redis: Check cache
     redis ->> nginx/php: 
     alt cache miss
@@ -44,6 +39,15 @@ sequenceDiagram
     end
     opt not authorized
         nginx/php ->> client: 403 Forbidden
+    end
+    nginx/php ->> redis: Get served snapshot
+    redis ->> nginx/php: 
+    alt cache miss
+        nginx/php ->> filesystem: Read served snapshot
+        nginx/php ->> redis: Save served snapshot
+    end
+    opt no snapshot served
+        nginx/php ->> client: 404 Not Found
     end
     nginx/php ->> filesystem: Check if file exists
     alt file does not exists
@@ -191,6 +195,8 @@ While most values are self-explanatory, there are a few that you need to manuall
 - `FILESYSTEM_DISK`: Disk to use during production, works same as development, more info in the development setup.
 - `REPOSITORY_RELEASE_TOKEN`: Token used to trigger from remote a clean release, you can set this to a random
   value, it's used to avoid unwanted requests.
+- `REPOSITORY_SYNC_COMMAND`: the command the worker runs to sync the repository, more info in
+  [Configuring the repository](#configuring-the-repository).
 - `NIGHTWATCH_TOKEN`: In case you want to enable nightwatch stats, you need to set this to the token provided by
   nightwatch.
 
@@ -214,7 +220,7 @@ environment):
 
 There's a sqlite database being stored in the `/var/www/html/storage` (for `php`, `worker` and `scheduler` containers)
 directory when running the service, you need to make sure that this directory is persistent across restarts,
-otherwise you will lose reference to endpoints and snapshots (or files, if you're using the local disk).
+otherwise you will lose the queued jobs (and the snapshots, if you're using the local disk).
 
 ### First deploy
 
@@ -250,79 +256,77 @@ Additional configuration can be provided to the application, such as automatic r
 access. Additional configuration can be found
 in [documentation](https://laravel.com/docs/11.x/configuration#maintenance-mode).
 
-### Adding a repository
+### Configuring the repository
 
-To add a repository, you need to enter to the `php` container and run the following command:
+Parceler serves a single repository, configured through the `.env` file:
 
-```bash
-php artisan repository:create
-```
-
-The command will guide you through the process of adding a repository; here are the fields that will be asked:
-
-- `name`: name of the repository will be used to identify the repository under the
-  path `repositories/{community|enterprise}/{repository_name}`,
-- `command`: the command the worker will run to sync the repository it can be anything available in the container.
-  Save the content of the repository under the path `source/{repository_name}` in the disk you're using.
-  (e.g. if you're using the local disk, save the content of the repository
-  under `storage/app/source/{repository_name}`). `rclone` binary is available in the container, to add a configuration
-  file follow the [Additional Configuration](#additional-configuration) section.
-- `source_folder`: if repository files are stored in a subfolder, you can specify it here, otherwise leave it empty.
-- `delay`: how many days the upstream files are delayed.
-
-Once the repository is added, a sync job will be created and the worker will start syncing the repository.
-
-### List repositories
-
-To list all the repositories, you can use the `php artisan repository:list` command.
-
-```bash
-php artisan repository:list
-```
+- `REPOSITORY_NAME`: name of the repository, used in the URL `repository/{community|enterprise}/{name}` and in the
+  storage paths. Defaults to `nethsecurity`.
+- `REPOSITORY_SYNC_COMMAND`: the command the worker runs to sync the repository, it can be anything available in the
+  container. Save the content of the repository under the path `source/{name}` in the disk you're using
+  (e.g. if you're using the local disk, save the content of the repository under `storage/app/private/source/{name}`).
+  `rclone` binary is available in the container, to add a configuration file follow the
+  [Additional Configuration](#additional-configuration) section.
+- `REPOSITORY_SUB_DIR`: if repository files are stored in a subfolder of `source/{name}`, you can specify it here,
+  otherwise leave it empty.
+- `REPOSITORY_DELAY`: how many days the served files are kept back from upstream. Defaults to `7`.
+- `REPOSITORY_PROMOTE_AT`: time of the day when the served snapshot is moved forward. Defaults to `03:00`.
 
 ### Repo Sync
 
-Repository syncs are dispatched by the scheduler daily. If you want to manually sync a repository, you can use the
-`php artisan repository:sync {repository_name}` command.
+The scheduler syncs the repository daily: the sync command runs, the content of the source folder is copied into a new
+snapshot under `snapshots/{name}/{timestamp}`, and the snapshots older than `REPOSITORY_DELAY` are deleted (except the
+one being served). If you want to manually sync the repository, you can use the following command:
 
 ```bash
-php artisan repository:sync {repository_name}
+php artisan repository:sync
 ```
 
-### Freezing repositories
+### Served snapshot
 
-Freezing a repository will prevent the system to use the normal defer release using the snapshots. This won't halt
-syncs, so you can freeze the repository to avoid a faulty package, you then unfreeze it to skip faulty packages.
-To freeze a repository, you can use the `php artisan repository:freeze {repository_name}` command.
+The snapshot being served is written in the `snapshots/{name}/current` file. Every day at `REPOSITORY_PROMOTE_AT` the
+scheduler moves it to the oldest snapshot within `REPOSITORY_DELAY`. If there's no snapshot within the delay (e.g. syncs
+failing for days), the served snapshot stays the same.
+
+To promote right away, you can use the following command:
 
 ```bash
-php artisan repository:freeze {repository_name}
+php artisan repository:promote
 ```
 
-Advanced usage can be achieved by providing a custom path like so:
+Beware, until a snapshot gets promoted the first time, every download returns 404.
+
+### Freezing the repository
+
+Freezing the repository stops the daily promotion, so the served snapshot stays the same. This won't halt syncs, so you
+can freeze the repository to avoid a faulty package, you then unfreeze it to skip faulty packages.
+To freeze the repository to the snapshot currently served, you can use the following command:
 
 ```bash
-php artisan repository:freeze {repository_name} {path}
+php artisan repository:freeze
 ```
 
-Please remember:
-
-- The path is relative to the storage disk.
-- The path won't be validated, so make sure it's correct.
-
-### Unfreezing repositories
-
-To unfreeze a repository, you can use the `php artisan repository:unfreeze {repository_name}` command.
+You can also freeze to a specific snapshot, which must be one of the listed in
+[List repository snapshots](#list-repository-snapshots):
 
 ```bash
-php artisan repository:unfreeze {repository_name}
+php artisan repository:freeze {snapshot}
 ```
+
+### Unfreezing the repository
+
+To unfreeze the repository, you can use the following command:
+
+```bash
+php artisan repository:unfreeze
+```
+
+The served snapshot moves forward at the next promotion, run `php artisan repository:promote` to do it right away.
 
 ### Force release of snapshots
 
-The system will automatically use the oldest snapshot available inside the `delay` timer given for each repo. However,
-if you need to push forward the release of some packages you can just delete the older snapshots through the filesystem
-used. The system will automatically adapt to the new oldest snapshot available.
+If you need to push forward the release of some packages, you can delete the older snapshots through the filesystem used,
+then run `php artisan repository:promote`, the oldest snapshot left within the delay will be served.
 
 ### Listing files in a repository
 
@@ -330,45 +334,44 @@ Since there's a possibility to have a remote disk as a repo, the following comma
 that is currently being served. The output is `grep` friendly.
 
 ```bash
-php artisan repository:files {repository_name}
+php artisan repository:list-files
 ```
 
 You can specify the path to list the files in a specific directory.
 
 ```bash
-php artisan repository:files {repository_name} {path}
+php artisan repository:list-files {path}
 ```
 
 This is useful when looking for a specific package that is causing issues like this:
 
 ```bash
-php artisan repository:files {repository_name} . | grep {package_name}
+php artisan repository:list-files . | grep {package_name}
 ```
 
 Using `.` as path everything on the storage will be listed, allowing to find for each snapshot the package that has been
-released. Remember that `source/{repository_name}` folder is always the latest sync, while `snapshots/{repository_name}`
-are the daily syncs.
+released. Remember that `source/{name}` folder is always the latest sync, while `snapshots/{name}` are the daily syncs.
 
 ### List repository snapshots
 
-To list all the snapshots of a repository, you can use the `php artisan snapshot:list {repository_name}` command, you'll
-be provided the folder that are snapshotted and which one is currently being served.
+To list all the snapshots, you can use the following command, you'll be provided the snapshots available and which one is
+currently being served.
 
 ```bash
-php artisan repository:snapshots {repository_name}
+php artisan repository:snapshots
 ```
 
 ### Fresh release
 
-A Fresh Release is a process that wipes all the snapshots of a repository and then creates one with the latest sync.
-This is useful when you want to release a new version of a repository, or when you want to force the release of a
-specific set of packages.
+A Fresh Release syncs the repository, serves the new snapshot right away and wipes all the other snapshots. It also
+unfreezes the repository. This is useful when you want to release a new version of the repository, or when you want to
+force the release of a specific set of packages.
 
 To trigger a fresh release, this can be done by both of the following:
 - CLI
 
 ```bash
-php artisan repository:release {repository_name}
+php artisan repository:release
 ```
 
 - CURL
@@ -376,7 +379,7 @@ php artisan repository:release {repository_name}
 Additional authentication must be provided, the token is set in the `.env` file under the `REPOSITORY_RELEASE_TOKEN`.
 
 ```bash
-curl -X POST -H Accept:application/json -H Authorization:Bearer <token> <url>/repository/<repository_name>/release
+curl -X POST -H Accept:application/json -H Authorization:Bearer <token> <url>/repository/<name>/release
 ```
 
 ## List of behaviors when faulty packages get accidentally distributed
@@ -388,8 +391,8 @@ faulty package go to the [list repository files](#listing-files-in-a-repository)
   Try to fix the issue before the daily sync happens, otherwise follow through in the next steps.
 
 - **Faulty package is in the snapshot `X`**:
-  You can safely delete the faulty snapshot, Parceler will use the oldest snapshot available inside the `delay`
-  timer given for each repo.
+  You can safely delete the faulty snapshot, then run `php artisan repository:promote`, Parceler will serve the oldest
+  snapshot left inside the `delay`. Beware, if `X` is the one being served, downloads return 404 until you promote.
 
 - **Faulty package is in snapshot `X`, but community has a fix**:
   You can manually [sync the repository](#repo-sync) to get the latest snapshot (if you don't have it already),
@@ -397,12 +400,12 @@ faulty package go to the [list repository files](#listing-files-in-a-repository)
   step.
 
 - **Faulty package is in snapshot `X`, with no fix available**:
-  You can [freeze the repository](#freezing-repositories) to avoid the faulty package, then when a fix is
-  eventually released you can [unfreeze the repository](#unfreezing-repositories) to skip the faulty package.
+  You can [freeze the repository](#freezing-the-repository) to a snapshot without the faulty package, then when a fix
+  is eventually released you can [unfreeze the repository](#unfreezing-the-repository) to skip the faulty package.
 
 ## FAQ
 
 ### How do I know when the latest sync happened?
 
-You can check the timestamp of the latest snapshot for each repository, otherwise you can check the `worker` container
-logs.
+You can check the timestamp of the latest snapshot with `php artisan repository:snapshots`, otherwise you can check the
+`worker` container logs.

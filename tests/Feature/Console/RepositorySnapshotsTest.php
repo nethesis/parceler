@@ -1,20 +1,20 @@
 <?php
 
-use App\Models\Repository;
+use App\Logic\PackageRepository;
+use Illuminate\Support\Facades\Storage;
 
-test('can list snapshots for a repository', function () {
-    $repository = Repository::factory()->create();
+test('can list snapshots of the repository', function () {
     Storage::fake();
-    Storage::makeDirectory($repository->snapshotDir().'/snapshot1');
-    Storage::makeDirectory($repository->snapshotDir().'/snapshot2');
-    Storage::makeDirectory($repository->snapshotDir().'/snapshot3');
-    Storage::makeDirectory($repository->snapshotDir().'/snapshot4');
-    $this->artisan('repository:snapshots', ['repository' => $repository->name])
+    $repository = app(PackageRepository::class);
+    $older = now()->subDay()->toAtomString();
+    $newer = now()->toAtomString();
+    Storage::makeDirectory($repository->snapshotDir().'/'.$newer);
+    Storage::makeDirectory($repository->snapshotDir().'/'.$older);
+    $repository->setCurrent($older);
+    $this->artisan('repository:snapshots')
         ->expectsTable(['Snapshot', 'Active'], [
-            ['Snapshot' => 'snapshot1', 'Active' => 'No'],
-            ['Snapshot' => 'snapshot2', 'Active' => 'No'],
-            ['Snapshot' => 'snapshot3', 'Active' => 'No'],
-            ['Snapshot' => 'snapshot4', 'Active' => 'No'],
+            ['Snapshot' => $older, 'Active' => 'Yes'],
+            ['Snapshot' => $newer, 'Active' => 'No'],
         ])
         ->assertExitCode(0);
 });

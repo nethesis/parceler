@@ -1,98 +1,84 @@
 <?php
 
-use App\Models\Repository;
+use App\Logic\PackageRepository;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\artisan;
 
-it('returns frozen directory', function () {
+it('freezes to the served snapshot', function () {
     Storage::fake();
-    $repository = Repository::factory()->create([
-        'delay' => 7,
-    ]);
-    $snapshotPath = config('repositories.snapshots').'/'.$repository->name;
-    Storage::createDirectory($snapshotPath.'/'.now()->subDays(6)->toAtomString());
-    expect($repository->getStablePath())
-        ->toBe($snapshotPath.'/'.now()->subDays(6)->toAtomString());
-    $repository->freeze = 'frozen';
-    $repository->save();
-    expect($repository->getStablePath())
-        ->toBe($snapshotPath.'/frozen');
+    $repository = app(PackageRepository::class);
+    $served = now()->subDays(6)->toAtomString();
+    Storage::createDirectory($repository->snapshotDir().'/'.$served);
+    $repository->setCurrent($served);
+
+    artisan('repository:freeze')
+        ->expectsOutput("Freezing repository to '$served'...")
+        ->assertSuccessful();
+
+    expect($repository->isFrozen())->toBeTrue()
+        ->and($repository->current())->toBe($served);
 });
 
-it('cannot freeze not existing directory')
-    ->artisan('repository:freeze', ['repository' => 'wrong_repo'])
-    ->expectsOutput("Repository 'wrong_repo' not found.")
-    ->assertFailed();
+it('freezes to the given snapshot', function () {
+    Storage::fake();
+    $repository = app(PackageRepository::class);
+    $older = now()->subDays(6)->toAtomString();
+    Storage::createDirectory($repository->snapshotDir().'/'.$older);
+    $repository->setCurrent(now()->subDays(4)->toAtomString());
 
-it('cannot freeze already frozen repository', function () {
-    $repository = Repository::factory()->freeze()->create();
-    artisan('repository:freeze', ['repository' => $repository->name])
-        ->expectsOutput("Repository '$repository->name' is already frozen.")
+    artisan('repository:freeze', ['snapshot' => $older])
+        ->expectsOutput("Freezing repository to '$older'...")
+        ->assertSuccessful();
+
+    expect($repository->isFrozen())->toBeTrue()
+        ->and($repository->current())->toBe($older);
+});
+
+it('cannot freeze to a missing snapshot', function () {
+    Storage::fake();
+    $repository = app(PackageRepository::class);
+
+    artisan('repository:freeze', ['snapshot' => 'missing'])
+        ->expectsOutput("Snapshot 'missing' not found.")
+        ->assertFailed();
+
+    expect($repository->isFrozen())->toBeFalse();
+});
+
+it('cannot freeze when nothing is served', function () {
+    Storage::fake();
+
+    artisan('repository:freeze')
+        ->expectsOutput('No snapshot is being served, provide one to freeze to.')
         ->assertFailed();
 });
 
-it('can freeze repository with custom directory', function () {
-    $repository = Repository::factory()->create([
-        'delay' => 7,
-    ]);
+it('cannot freeze an already frozen repository', function () {
     Storage::fake();
-    $directories = [
-        now()->subDays(8)->toAtomString(),
-        now()->subDays(6)->toAtomString(),
-        now()->subDays(5)->toAtomString(),
-        now()->subDays(4)->toAtomString(),
-        'cool_custom_directory',
-    ];
-    foreach ($directories as $directory) {
-        Storage::createDirectory($repository->snapshotDir().'/'.$directory);
-    }
-    artisan('repository:freeze', ['repository' => $repository->name, 'directory' => $directories[4]])
-        ->expectsOutput("Freezing repository '$repository->name' to '$directories[4]'...")
-        ->assertSuccessful();
-    $repository->refresh();
-    $repository->freeze = $directories[4];
-});
+    app(PackageRepository::class)->freeze();
 
-it('can freeze repository', function () {
-    $repository = Repository::factory()->create([
-        'delay' => 7,
-    ]);
-    Storage::fake();
-    $directories = [
-        now()->subDays(8)->toAtomString(),
-        now()->subDays(6)->toAtomString(),
-        now()->subDays(5)->toAtomString(),
-        now()->subDays(4)->toAtomString(),
-        'cool_custom_directory',
-    ];
-    foreach ($directories as $directory) {
-        Storage::createDirectory($repository->snapshotDir().'/'.$directory);
-    }
-    artisan('repository:freeze', ['repository' => $repository->name])
-        ->expectsOutput("Freezing repository '$repository->name' to '$directories[1]'...")
-        ->assertSuccessful();
-    $repository->refresh();
-    $repository->freeze = $directories[1];
-});
-it('cannot unfroze not existing repository')
-    ->artisan('repository:unfreeze', ['repository' => 'wrong_repo'])
-    ->expectsOutput("Repository 'wrong_repo' not found.")
-    ->assertFailed();
-
-it('cannot unfreeze not frozen repository', function () {
-    $repository = Repository::factory()->create();
-    artisan('repository:unfreeze', ['repository' => $repository->name])
-        ->expectsOutput("Repository '$repository->name' is not frozen.")
+    artisan('repository:freeze')
+        ->expectsOutput('Repository is already frozen.')
         ->assertFailed();
 });
 
-it('can unfreeze repository', function () {
-    $repository = Repository::factory()->freeze()->create();
-    artisan('repository:unfreeze', ['repository' => $repository->name])
-        ->expectsOutput("Unfreezing repository '$repository->name'...")
+it('unfreezes the repository', function () {
+    Storage::fake();
+    $repository = app(PackageRepository::class);
+    $repository->freeze();
+
+    artisan('repository:unfreeze')
+        ->expectsOutput('Unfreezing repository...')
         ->assertSuccessful();
-    $repository->refresh();
-    expect($repository->freeze)
-        ->toBeNull();
+
+    expect($repository->isFrozen())->toBeFalse();
+});
+
+it('cannot unfreeze a repository that is not frozen', function () {
+    Storage::fake();
+
+    artisan('repository:unfreeze')
+        ->expectsOutput('Repository is not frozen.')
+        ->assertFailed();
 });
