@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Repository;
+use App\Logic\PackageRepository;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class FreezeRepository extends Command
 {
@@ -13,41 +12,39 @@ class FreezeRepository extends Command
      *
      * @var string
      */
-    protected $signature = 'repository:freeze {repository} {directory?}';
+    protected $signature = 'repository:freeze {snapshot?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Freeze specified repository';
+    protected $description = 'Freeze the repository to the given snapshot, or the one currently served.';
 
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(PackageRepository $repository): int
     {
-        $repoName = $this->argument('repository');
-        try {
-            $repository = Repository::where('name', $repoName)->firstOrFail();
-        } catch (ModelNotFoundException) {
-            $this->error("Repository '$repoName' not found.");
+        if ($repository->isFrozen()) {
+            $this->error('Repository is already frozen.');
 
             return self::FAILURE;
         }
-        if ($repository->freeze != null) {
-            $this->error("Repository '$repository->name' is already frozen.");
+        $snapshot = $this->argument('snapshot') ?? $repository->current();
+        if (is_null($snapshot)) {
+            $this->error('No snapshot is being served, provide one to freeze to.');
 
             return self::FAILURE;
         }
-        if (is_null($this->argument('directory'))) {
-            $directory = basename($repository->getStablePath());
-        } else {
-            $directory = $this->argument('directory');
+        if (! $repository->snapshots()->contains($snapshot)) {
+            $this->error("Snapshot '$snapshot' not found.");
+
+            return self::FAILURE;
         }
-        $this->info("Freezing repository '$repository->name' to '$directory'...");
-        $repository->freeze = $directory;
-        $repository->save();
+        $this->info("Freezing repository to '$snapshot'...");
+        $repository->setCurrent($snapshot);
+        $repository->freeze();
 
         return self::SUCCESS;
     }

@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Repository;
+use App\Logic\PackageRepository;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UnFreezeRepository extends Command
 {
@@ -13,36 +12,27 @@ class UnFreezeRepository extends Command
      *
      * @var string
      */
-    protected $signature = 'repository:unfreeze {repository}';
+    protected $signature = 'repository:unfreeze';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Unfreeze a frozen repository.';
+    protected $description = 'Unfreeze the repository, the next promotion will move the served snapshot forward.';
 
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(PackageRepository $repository): int
     {
-        $repoName = $this->argument('repository');
-        try {
-            $repository = Repository::where('name', $repoName)->firstOrFail();
-        } catch (ModelNotFoundException) {
-            $this->error("Repository '$repoName' not found.");
+        if (! $repository->isFrozen()) {
+            $this->error('Repository is not frozen.');
 
             return self::FAILURE;
         }
-        if ($repository->freeze == null) {
-            $this->error("Repository '$repository->name' is not frozen.");
-
-            return self::FAILURE;
-        }
-        $this->info("Unfreezing repository '$repository->name'...");
-        $repository->freeze = null;
-        $repository->save();
+        $this->info('Unfreezing repository...');
+        $repository->unfreeze();
 
         return self::SUCCESS;
     }

@@ -8,9 +8,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\SyncRepository;
-use App\Models\Repository;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SyncRepositories extends Command
 {
@@ -19,29 +17,21 @@ class SyncRepositories extends Command
      *
      * @var string
      */
-    protected $signature = 'repository:sync {repository*}';
+    protected $signature = 'repository:sync';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sync of all repositories.';
+    protected $description = 'Sync the repository.';
 
     /**
      * Execute the console command.
      */
     public function handle(): void
     {
-        $repositories = $this->argument('repository');
-        foreach ($repositories as $repoName) {
-            try {
-                $repository = Repository::where('name', $repoName)->firstOrFail();
-                $this->info("Dispatching sync for '$repoName'.");
-                SyncRepository::dispatch($repository);
-            } catch (ModelNotFoundException) {
-                $this->warn("Repository '$repoName' not found.");
-            }
-        }
+        $this->info('Dispatching sync.');
+        SyncRepository::dispatch();
     }
 }
