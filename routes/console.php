@@ -1,11 +1,9 @@
 <?php
 
+use App\Jobs\PromoteSnapshot;
 use App\Jobs\SyncRepository;
-use App\Models\Repository;
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::call(function () {
-    foreach (Repository::cursor() as $repository) {
-        SyncRepository::dispatch($repository);
-    }
-})->name('Sync Repositories')->daily();
+Schedule::job(new SyncRepository)->name('Sync Repository')->daily();
+
+Schedule::job(new PromoteSnapshot)->name('Promote Snapshot')->dailyAt(config('repositories.promote_at'));

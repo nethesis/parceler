@@ -7,7 +7,6 @@
 
 namespace App\Jobs;
 
-use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Attributes\Timeout;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 #[Timeout(3600)]
 class DeleteSnapshot implements ShouldQueue
 {
-    use Batchable, Queueable;
+    use Queueable;
 
     /**
      * Delete a snapshot directory.
@@ -29,10 +28,6 @@ class DeleteSnapshot implements ShouldQueue
      */
     public function handle(): void
     {
-        if ($this->batch()?->cancelled()) {
-            return;
-        }
-
         Log::debug("Deleting snapshot directory: {$this->directory}");
         Storage::deleteDirectory($this->directory);
     }
