@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Logic\LicenceVerification;
 use App\Logic\NetifydCatalogRepository;
 use App\Logic\NetifydLicenseRepository;
+use App\Logic\PackageRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
@@ -22,6 +23,15 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(LicenceVerification::class, function () {
             return new LicenceVerification(config('repositories.endpoints.enterprise'), config('repositories.endpoints.community'));
+        });
+        $this->app->singleton(PackageRepository::class, function () {
+            return new PackageRepository(
+                config('repositories.name'),
+                config('repositories.source_folder'),
+                config('repositories.snapshots'),
+                config('repositories.sub_dir'),
+                config('repositories.delay'),
+            );
         });
         $this->app->singleton(NetifydLicenseRepository::class, function () {
             return new NetifydLicenseRepository(config('netifyd.endpoint'), config('netifyd.api-key'));
