@@ -7,7 +7,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Repository;
+use App\Logic\PackageRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,9 +16,14 @@ class RepositoryController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request, Repository $repository, string $path)
+    public function __invoke(Request $request, PackageRepository $repository, string $path)
     {
-        $fileToDownload = $repository->getStablePath().'/'.$path;
+        $servingDir = $repository->servingDir();
+        if (is_null($servingDir)) {
+            abort(404);
+        }
+
+        $fileToDownload = $servingDir.'/'.$path;
 
         if (Storage::fileMissing($fileToDownload)) {
             abort(404);
