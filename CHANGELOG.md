@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.2](https://github.com/nethesis/parceler/compare/v1.6.1...v1.6.2) (2026-10-31)
+
+
+### Bug Fixes
+
+* lockfile bump ([b2c08b8](https://github.com/nethesis/parceler/commit/b2c08b8c13b9c54b3c6e178992b2eed59a6d1be8))
+* removed deprecation ([7e8ae69](https://github.com/nethesis/parceler/commit/7e8ae69c3039626c541c2981d30ea30fcb20952b))
+
 ## [1.6.1](https://github.com/nethesis/parceler/compare/v1.6.0...v1.6.1) (2026-10-22)
 
 
