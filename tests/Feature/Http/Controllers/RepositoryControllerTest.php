@@ -40,6 +40,17 @@ describe('valid licence provided', function () {
             ->assertRedirect();
     });
 
+    it('does not start a session on download', function () {
+        Storage::fake();
+        $repo = Repository::factory()->create();
+        $stablePath = $repo->snapshotDir().'/'.now()->toAtomString();
+        Storage::putFileAs($stablePath.'/packages/x86_64/base', UploadedFile::fake()->create('Packages'), 'Packages');
+        withBasicAuth(fake()->uuid(), '')
+            ->get("/repository/enterprise/$repo->name/packages/x86_64/base/Packages")
+            ->assertRedirect()
+            ->assertCookieMissing(config('session.cookie'));
+    });
+
     it('returns not found if file missing', function () {
         $uuid = fake()->uuid();
         $repo = Repository::factory()->create();
