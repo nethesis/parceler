@@ -28,10 +28,13 @@
         "ext-tokenizer": "*",
         "ext-xml": "*",
         "laravel/framework": "^13.0",
-        "laravel/nightwatch": "^1.12",
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^3.0",
-        "league/flysystem-aws-s3-v3": "^3.0"
+        "league/flysystem-aws-s3-v3": "^3.0",
+        "open-telemetry/exporter-otlp": "^1.6",
+        "open-telemetry/opentelemetry-auto-guzzle": "^1.5",
+        "open-telemetry/opentelemetry-auto-laravel": "^1.10",
+        "open-telemetry/sdk": "^1.17"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -84,7 +87,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "tbachert/spi": true
         }
     },
     "minimum-stability": "stable",

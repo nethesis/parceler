@@ -8,7 +8,6 @@ use App\Http\Middleware\ReleaseAuth;
 use App\Jobs\Release;
 use App\Models\Repository;
 use Illuminate\Support\Facades\Route;
-use Laravel\Nightwatch\Http\Middleware\Sample;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,7 +20,7 @@ Route::middleware(ReleaseAuth::class)
         return response()->json(['message' => 'Release job dispatched.']);
     });
 
-Route::middleware([ForceBasicAuth::class, Sample::rate(0)])->group(function () {
+Route::middleware(ForceBasicAuth::class)->group(function () {
     Route::get('/repository/community/{repository:name}/{path}', RepositoryController::class)
         ->where('path', '.*')
         ->middleware(CommunityLicenceCheck::class);
