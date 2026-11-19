@@ -31,8 +31,6 @@ services:
       FPM_PORT: 9000
   php:
     <<: *app
-    environment:
-      NIGHTWATCH_INGEST_URI: nightwatch-agent:2407
   scheduler:
     <<: *app
     user: root
@@ -48,20 +46,6 @@ services:
     environment:
       PHP_HOST: php
       PHP_PORT: 9000
-  nightwatch-agent:
-    <<: *app
-    user: root
-    command: nightwatch
-    stop_signal: SIGKILL
-    environment:
-      PHP_HOST: php
-      PHP_PORT: 9000
-    healthcheck:
-      test: php artisan nightwatch:status
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
   redis:
     image: redis:8.10.3-alpine
     restart: on-failure

@@ -1,4 +1,4 @@
-ARG PHP_EXTENSIONS="pcntl redis"
+ARG PHP_EXTENSIONS="pcntl redis opentelemetry protobuf"
 ARG ADDITIONAL_PACKAGES="bash rclone sqlite"
 
 FROM php:8.5.13-fpm-alpine AS base

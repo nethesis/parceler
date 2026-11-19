@@ -14,7 +14,6 @@ The application is structured as follows:
 - `scheduler`: Scheduler that handles cron jobs for the php application.
 - `worker`: Worker that handles the jobs dispatched by the php application.
 - `redis`: Redis instance for cache.
-- `nightwatch-agent`: Agent for nightwatch stats.
 
 The storage can be configured to use different disks, however, a local shared storage is mandatory due to the `sqlite`
 database that `php`, `scheduler` and `worker` containers share.
@@ -191,8 +190,6 @@ While most values are self-explanatory, there are a few that you need to manuall
 - `FILESYSTEM_DISK`: Disk to use during production, works same as development, more info in the development setup.
 - `REPOSITORY_RELEASE_TOKEN`: Token used to trigger from remote a clean release, you can set this to a random
   value, it's used to avoid unwanted requests.
-- `NIGHTWATCH_TOKEN`: In case you want to enable nightwatch stats, you need to set this to the token provided by
-  nightwatch.
 
 ### Container Configuration
 
