@@ -31,5 +31,6 @@ class CleanRepository implements ShouldQueue
                 Storage::deleteDirectory($directory);
             }
         }
+        $event->repository->forgetStablePath();
     }
 }
