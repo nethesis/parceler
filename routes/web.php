@@ -7,8 +7,12 @@ use App\Http\Middleware\ForceBasicAuth;
 use App\Http\Middleware\ReleaseAuth;
 use App\Jobs\Release;
 use App\Models\Repository;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
-use Laravel\Nightwatch\Http\Middleware\Sample;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,7 +25,13 @@ Route::middleware(ReleaseAuth::class)
         return response()->json(['message' => 'Release job dispatched.']);
     });
 
-Route::middleware([ForceBasicAuth::class, Sample::rate(0)])->group(function () {
+Route::middleware(ForceBasicAuth::class)->withoutMiddleware([
+    EncryptCookies::class,
+    AddQueuedCookiesToResponse::class,
+    StartSession::class,
+    ShareErrorsFromSession::class,
+    PreventRequestForgery::class,
+])->group(function () {
     Route::get('/repository/community/{repository:name}/{path}', RepositoryController::class)
         ->where('path', '.*')
         ->middleware(CommunityLicenceCheck::class);

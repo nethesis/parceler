@@ -6,12 +6,10 @@ use App\Logic\LicenceVerification;
 use App\Logic\NetifydCatalogRepository;
 use App\Logic\NetifydLicenseRepository;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Nightwatch\Facades\Nightwatch;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,9 +34,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::listen(function (DiagnosingHealth $event) {
-            Nightwatch::dontSample();
-        });
+        // Needed by the OpenTelemetry Laravel instrumentation to trace redis commands
+        Redis::enableEvents();
 
         RateLimiter::for('netifyd', function (Request $request) {
             $hour = now()->hour;
