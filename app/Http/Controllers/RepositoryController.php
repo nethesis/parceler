@@ -20,16 +20,16 @@ class RepositoryController extends Controller
     {
         $fileToDownload = $repository->getStablePath().'/'.$path;
 
-        if (Storage::fileMissing($fileToDownload)) {
-            abort(404);
-        }
-
         // When using the local driver, we can just return the file
         if (! Storage::providesTemporaryUrls()) {
+            if (Storage::fileMissing($fileToDownload)) {
+                abort(404);
+            }
+
             return Storage::download($fileToDownload);
         }
 
-        // This offloads the download directly to the client
+        // This offloads the download directly to the client, a missing file gets its 404 from the storage
         return redirect(Storage::temporaryUrl($fileToDownload, now()->addMinute()));
     }
 }

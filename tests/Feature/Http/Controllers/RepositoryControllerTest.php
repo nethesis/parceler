@@ -51,11 +51,13 @@ describe('valid licence provided', function () {
             ->assertCookieMissing(config('session.cookie'));
     });
 
-    it('returns not found if file missing', function () {
+    it('returns not found from the storage if file missing', function () {
         $uuid = fake()->uuid();
         $repo = Repository::factory()->create();
-        withBasicAuth($uuid, '')
+        $response = withBasicAuth($uuid, '')
             ->get("/repository/enterprise/$repo->name/packages/x86_64/base/Packages")
+            ->assertRedirect();
+        get($response->headers->get('Location'))
             ->assertNotFound();
     });
 });
