@@ -5,7 +5,6 @@
         ":disableDependencyDashboard",
         ":prHourlyLimitNone",
         ":automergeMinor",
-        ":separatePatchReleases",
         ":maintainLockFilesMonthly",
         ":assignee(@Tbaile)"
     ],
@@ -13,6 +12,16 @@
         {
             "matchManagers": ["composer"],
             "rangeStrategy": "replace"
+        },
+        {
+            "matchDatasources": ["docker"],
+            "matchPackageNames": ["php", "nginx", "redis"],
+            "separateMinorPatch": true
+        },
+        {
+            "matchDatasources": ["docker"],
+            "matchPackageNames": ["nginx"],
+            "allowedVersions": "/^\\d+\\.\\d*[02468]\\./"
         }
     ],
     "vulnerabilityAlerts": {
