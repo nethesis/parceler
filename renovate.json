@@ -5,6 +5,7 @@
         ":disableDependencyDashboard",
         ":prHourlyLimitNone",
         ":automergeMinor",
+        ":separatePatchReleases",
         ":maintainLockFilesMonthly",
         ":assignee(@Tbaile)"
     ],
