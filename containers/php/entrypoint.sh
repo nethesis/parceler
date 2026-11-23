@@ -41,11 +41,6 @@ elif [ "$1" = "worker" ]; then
     wait_for_redis
     optimize
     exec su -s /bin/sh -c "php artisan queue:work --tries=3" www-data
-elif [ "$1" = "nightwatch" ]; then
-    wait_for_php_fpm
-    wait_for_redis
-    optimize
-    exec su -s /bin/sh -c "php artisan nightwatch:agent --listen-on 0.0.0.0:2407" www-data
 else
     exec "$@"
 fi
